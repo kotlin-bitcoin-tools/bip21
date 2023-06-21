@@ -15,4 +15,8 @@ public class Address(
         // Throws with a meaningful error if the string cannot be parsed into an address that matches the network.
         Bitcoin.addressToPublicKeyScript(network.chainHash, value)
     }
+
+    override fun toString(): String {
+        return value
+    }
 }

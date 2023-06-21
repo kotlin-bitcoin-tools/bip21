@@ -5,10 +5,115 @@
 
 package org.bitcointools
 
+import fr.acinq.bitcoin.Satoshi
+import java.net.URI
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
+
 public data class Bip21URI(
     public val address: Address,
-    public val amount: ULong? = null,
+    public val amount: Satoshi? = null,
     public val label: String? = null,
     public val message: String? = null,
-    public val other: Map<String, String>? = null,
-)
+    public val otherParameters: Map<String, String>? = null,
+) {
+    public fun toURI(): String {
+        StringBuilder("bitcoin:${address.value}").let { builder ->
+            if (amount == null && label == null && message == null && otherParameters == null) {
+                return builder.toString()
+            } else {
+                builder.append("?")
+
+                builder.append(amount?.let {
+                    if (builder.last() == '?') "amount=${satoshiToBitcoin(it)}" else "&amount=${satoshiToBitcoin(it)}"
+                } ?: "")
+
+                builder.append(label?.let {
+                    if (builder.last() == '?') "label=${encodeURLString(it)}" else "&label=${encodeURLString(it)}"
+                } ?: "")
+
+                builder.append(message?.let {
+                    if (builder.last() == '?') "message=${encodeURLString(it)}" else "&message=${encodeURLString(it)}"
+                } ?: "")
+
+                otherParameters?.forEach { (key, value) ->
+                    val element = if (builder.last() == '?') "$key=${encodeURLString(value)}" else "&$key=${encodeURLString(value)}"
+                    builder.append(element)
+                }
+
+                return builder.toString()
+            }
+        }
+    }
+
+    public companion object {
+        public fun fromString(input: String, network: Network): Bip21URI {
+            val uri = URI.create(input)
+            require(uri.scheme.lowercase() == "bitcoin") { "Invalid scheme: ${uri.scheme}" }
+
+            // If the string contains a ? character, we deconstruct it into the address and other parameters parts
+            // otherwise we return a Bip21URI with only the address
+            val (address, parameters) = uri.schemeSpecificPart.find { it == '?' }?.let {
+                uri.schemeSpecificPart.split("?", limit = 2)
+            } ?: return Bip21URI(address = Address(uri.schemeSpecificPart, network))
+
+            require(parameters.isNotEmpty()) { "Invalid URI: parameters part is empty" }
+
+            // Check for duplicate parameters and throw if any are found because the later ones would
+            // override the earlier ones
+            val keys: List<String> = parameters.split("&").map { it.split("=", limit = 2)[0] }
+            if (keys.size != keys.toSet().size) {
+                throw InvalidURIException("Invalid URI: duplicate parameter")
+            }
+
+            // Deconstruct the parameters part into a map of key-value pairs
+            val parametersMap = parameters.split("&").associate { part ->
+                val keyValueElement = part.split("=", limit = 2)
+                require(keyValueElement.size == 2) { "Invalid URI: parameter $part does not have a separator" }
+
+                val (key, value) = keyValueElement
+                require(key.isNotEmpty()) { "Invalid URI: parameter $part has an empty key" }
+                require(value.isNotEmpty()) { "Invalid URI: parameter $part has an empty value" }
+
+                key to value
+            }
+
+            val validatedAddress = Address(address, network)
+            val amount: Satoshi? = parametersMap["amount"]?.let { bitcoinToSatoshi(it) }
+            val label: String? = parametersMap["label"]
+            val message: String? = parametersMap["message"]
+            val other: Map<String, String>? = parametersMap
+                .filterKeys { it !in setOf("amount", "label", "message") }
+                .takeIf { it.isNotEmpty() }
+
+            return Bip21URI(
+                address = validatedAddress,
+                amount = amount,
+                label = label,
+                message = message,
+                otherParameters = other
+            )
+        }
+
+        private fun bitcoinToSatoshi(amount: String): Satoshi {
+            val bitcoin = amount.toBigDecimal()
+            require(bitcoin >= 0.toBigDecimal()) { "Invalid amount: $amount (cannot be negative)" }
+            require(bitcoin <= 21_000_000.toBigDecimal()) { "Invalid amount: $amount (above possible number of bitcoin)" }
+
+            try {
+                val satoshi = bitcoin.multiply(100_000_000.toBigDecimal()).longValueExact()
+                return Satoshi(satoshi)
+            } catch (e: ArithmeticException) {
+                throw InvalidURIException("Invalid amount: $amount (too many decimal places)")
+            }
+        }
+
+        private fun satoshiToBitcoin(amount: Satoshi): String {
+            return amount.sat.toBigDecimal().divide(100_000_000.toBigDecimal()).toString()
+        }
+
+        private fun encodeURLString(stringToEncode: String): String {
+            return URLEncoder.encode(stringToEncode, StandardCharsets.UTF_8).replace("+", "%20")
+        }
+    }
+}
