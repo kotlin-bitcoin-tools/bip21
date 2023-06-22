@@ -25,6 +25,23 @@ class Bip21URITest {
         }
 
         @Test
+        fun `Schema is case insensitive`() {
+            Bip21URI.fromString("BiTcOiN:1andreas3batLhQa2FawWjeyjCqyBzypd", Network.MAINNET)
+            Bip21URI.fromString("BITCOIN:1andreas3batLhQa2FawWjeyjCqyBzypd", Network.MAINNET)
+            Bip21URI.fromString("Bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd", Network.MAINNET)
+        }
+
+        @Test
+        fun `URI has bech32 address in all caps`() {
+            val uri = Bip21URI.fromString("bitcoin:BC1Q0XCQPZRKY6EFF2G52QDYE53XKK9JXKVRH6YHYW", Network.MAINNET)
+
+            assertEquals<String>(
+                expected = Address("BC1Q0XCQPZRKY6EFF2G52QDYE53XKK9JXKVRH6YHYW", Network.MAINNET).value,
+                actual = uri.address.value
+            )
+        }
+
+        @Test
         fun `URI with full standard parameters`() {
             val uri = Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=50&label=Luke-Jr&message=Donation%20for%20project%20xyz", Network.MAINNET)
 
