@@ -18,3 +18,10 @@ jobs:
 
       - name: "Run tests"
         run: ./gradlew test --console=plain
+
+      - name: "Upload test reports"
+        uses: actions/upload-artifact@v2
+        if: failure() # This step will only run if a previous steps failed
+        with:
+          name: "test-reports"
+          path: lib/build/reports/tests/test/
