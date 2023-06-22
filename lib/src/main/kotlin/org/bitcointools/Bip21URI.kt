@@ -45,7 +45,11 @@ public data class Bip21URI(
                 } ?: "")
 
                 otherParameters?.forEach { (key, value) ->
-                    val element = if (builder.last() == '?') "$key=${encodeURLString(value)}" else "&$key=${encodeURLString(value)}"
+                    val element = if (builder.last() == '?') {
+                        "${encodeURLString(key)}=${encodeURLString(value)}"
+                    } else {
+                        "&${encodeURLString(key)}=${encodeURLString(value)}"
+                    }
                     builder.append(element)
                 }
 

@@ -74,6 +74,41 @@ class Bip21URITest {
             assertEquals("999", uri.otherParameters?.get("arg2"))
             assertEquals("abc abc", uri.otherParameters?.get("arg3"))
         }
+
+        @Test
+        fun `URI has extreme bitcoin amounts`() {
+            Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=21000000", Network.MAINNET)
+            Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=21000000.0000000000000", Network.MAINNET)
+            Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=0.00000001", Network.MAINNET)
+            Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=000000000000.00000001", Network.MAINNET)
+        }
+
+        @Test
+        fun `Build URI using spaces in values of label, message, and other parameters`() {
+            val uri = Bip21URI(
+                address = Address("1andreas3batLhQa2FawWjeyjCqyBzypd", Network.MAINNET),
+                amount = Satoshi(5000000000),
+                label = "Kotlin Bitcoin Tools",
+                message = "Building tools for bitcoin in Kotlin",
+                otherParameters = mapOf("otherparameter1" to "abc abc", "otherparameter2" to "def def")
+            )
+            assertEquals(
+                expected = "bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=50&label=Kotlin%20Bitcoin%20Tools&message=Building%20tools%20for%20bitcoin%20in%20Kotlin&otherparameter1=abc%20abc&otherparameter2=def%20def",
+                actual = uri.toURI()
+            )
+        }
+
+        @Test
+        fun `Build URI using spaces in names of parameters`() {
+            val uri = Bip21URI(
+                address = Address("1andreas3batLhQa2FawWjeyjCqyBzypd", Network.MAINNET),
+                otherParameters = mapOf("other parameter 1" to "abc abc", "other parameter 2" to "def def")
+            )
+            assertEquals(
+                expected = "bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?other%20parameter%201=abc%20abc&other%20parameter%202=def%20def",
+                actual = uri.toURI()
+            )
+        }
     }
 
     @Nested
@@ -130,6 +165,23 @@ class Bip21URITest {
                 Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount100&arg1=50&arg2=999&arg3=abc%20abc", Network.MAINNET)
             }
             assertEquals("Invalid URI: parameter amount100 does not have a separator", exception.message)
+        }
+
+        @Test
+        fun `URI has invalid bitcoin amounts`() {
+            val exception1 = assertFailsWith<IllegalArgumentException> {
+                Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=21000001", Network.MAINNET)
+            }
+            val exception2 = assertFailsWith<IllegalArgumentException> {
+                Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=21000000.00000001", Network.MAINNET)
+            }
+            val exception3 = assertFailsWith<InvalidURIException> {
+                Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=0.000000001", Network.MAINNET)
+            }
+
+            assertEquals("Invalid amount: 21000001 (above possible number of bitcoin)", exception1.message)
+            assertEquals("Invalid amount: 21000000.00000001 (above possible number of bitcoin)", exception2.message)
+            assertEquals("Invalid amount: 0.000000001 (too many decimal places)", exception3.message)
         }
     }
 }
