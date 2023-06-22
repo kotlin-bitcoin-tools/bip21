@@ -1,6 +1,7 @@
 plugins {
     id("org.jetbrains.kotlin.jvm") version "1.8.10"
     id("java-library")
+    id("maven-publish")
 }
 
 repositories {
@@ -31,4 +32,16 @@ java {
 
 kotlin {
     explicitApi()
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "org.bitcointools"
+            artifactId = "bip21"
+            version = "0.0.1-SNAPSHOT"
+
+            from(components["java"])
+        }
+    }
 }
