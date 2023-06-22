@@ -5,4 +5,7 @@
 
 package org.bitcointools
 
+/**
+ * This exception is thrown when a URI is invalid.
+ */
 public class InvalidURIException(message: String) : Exception(message)

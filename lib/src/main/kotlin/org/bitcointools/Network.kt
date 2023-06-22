@@ -8,6 +8,10 @@ package org.bitcointools
 import fr.acinq.bitcoin.ByteVector32
 import fr.acinq.bitcoin.Block
 
+/**
+ * This type is passed to the [Address] constructor to specify the network that the address is for and is used by
+ * the fr.acinq.bitcoin library to determine the chain hash for the network.
+ */
 public enum class Network {
     MAINNET { override val chainHash: ByteVector32 = Block.LivenetGenesisBlock.hash },
     TESTNET { override val chainHash: ByteVector32 = Block.TestnetGenesisBlock.hash },

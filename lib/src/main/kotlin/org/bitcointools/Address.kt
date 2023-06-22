@@ -7,6 +7,10 @@ package org.bitcointools
 
 import fr.acinq.bitcoin.Bitcoin
 
+/**
+ * Represents a bitcoin address. This is really just a wrapper around the string value, but it provides
+ * a way to test for the validity of the address given a specific [Network].
+ */
 public class Address(
     public val value: String,
     network: Network
@@ -16,6 +20,10 @@ public class Address(
         Bitcoin.addressToPublicKeyScript(network.chainHash, value)
     }
 
+
+    /**
+     * Returns a string representation of the address.
+     */
     override fun toString(): String {
         return value
     }
