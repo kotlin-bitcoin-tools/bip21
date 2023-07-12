@@ -2,7 +2,10 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version "1.8.10"
     id("java-library")
     id("maven-publish")
+    id("org.jetbrains.dokka") version "1.8.10"
 }
+
+val libraryVersion: String by project
 
 repositories {
     mavenCentral()
@@ -39,9 +42,20 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "org.bitcointools"
             artifactId = "bip21"
-            version = "0.0.1-SNAPSHOT"
+            version = libraryVersion
 
             from(components["java"])
+        }
+    }
+}
+
+tasks.withType<org.jetbrains.dokka.gradle.DokkaTask>().configureEach {
+    dokkaSourceSets {
+        named("main") {
+            moduleName.set("bip21")
+            moduleVersion.set(libraryVersion)
+            // includes.from("Module.md")
+            // samples.from("src/test/kotlin/org/bitcointools/Samples.kt")
         }
     }
 }
