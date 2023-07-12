@@ -1,4 +1,4 @@
-package org.bitcointools
+package org.bitcointools.bip21
 
 import kotlin.test.Test
 

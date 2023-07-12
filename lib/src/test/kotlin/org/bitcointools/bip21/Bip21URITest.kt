@@ -1,4 +1,4 @@
-package org.bitcointools
+package org.bitcointools.bip21
 
 import fr.acinq.bitcoin.Satoshi
 import org.junit.jupiter.api.Nested
