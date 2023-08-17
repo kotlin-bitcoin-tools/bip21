@@ -11,10 +11,7 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    implementation("fr.acinq.bitcoin:bitcoin-kmp-jvm:0.12.0")
-    implementation("fr.acinq.secp256k1:secp256k1-kmp-jni-jvm-darwin:0.10.0")
-}
+dependencies {}
 
 testing {
     suites {

@@ -5,7 +5,6 @@
 
 package org.bitcointools.bip21
 
-import fr.acinq.bitcoin.Satoshi
 import java.net.URI
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -16,24 +15,24 @@ import java.nio.charset.StandardCharsets
  * See https://github.com/bitcoin/bips/blob/master/bip-0021.mediawiki for specification.
  */
 public data class Bip21URI(
-    public val address: Address,
+    public val address: String,
     public val amount: Satoshi? = null,
     public val label: String? = null,
     public val message: String? = null,
     public val otherParameters: Map<String, String>? = null,
 ) {
     /**
-     * Returns a string representation of the URI.
+     * Return a string representation of the URI.
      */
     public fun toURI(): String {
-        StringBuilder("bitcoin:${address.value}").let { builder ->
+        StringBuilder("bitcoin:$address").let { builder ->
             if (amount == null && label == null && message == null && otherParameters == null) {
                 return builder.toString()
             } else {
                 builder.append("?")
 
                 builder.append(amount?.let {
-                    if (builder.last() == '?') "amount=${satoshiToBitcoin(it)}" else "&amount=${satoshiToBitcoin(it)}"
+                    if (builder.last() == '?') "amount=${it.toBitcoin()}" else "&amount=${it.toBitcoin()}"
                 } ?: "")
 
                 builder.append(label?.let {
@@ -60,19 +59,22 @@ public data class Bip21URI(
 
     public companion object {
         /**
-         * Parses a string into a Bip21URI.
-         *
-         * The method requires a [Network] to be provided to validate the address.
+         * Parse a string into a Bip21URI.
          */
-        public fun fromString(input: String, network: Network): Bip21URI {
+        public fun fromString(input: String): Bip21URI {
             val uri = URI.create(input)
             require(uri.scheme.lowercase() == "bitcoin") { "Invalid scheme: ${uri.scheme}" }
+
+            // TODO: Because we don't validate addresses in this library, it's possible for the URI to be malformed by missing
+            //       the ? character between the address and the parameters, and the Bip21URI will still be created with an invalid
+            //       address. Example: parsing `bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypdamount=50&label=Luke-Jr` would create
+            //       bip21Uri.address = "1andreas3batLhQa2FawWjeyjCqyBzypdamount=50&label=Luke-Jr".
 
             // If the string contains a ? character, we deconstruct it into the address and other parameters parts
             // otherwise we return a Bip21URI with only the address
             val (address, parameters) = uri.schemeSpecificPart.find { it == '?' }?.let {
                 uri.schemeSpecificPart.split("?", limit = 2)
-            } ?: return Bip21URI(address = Address(uri.schemeSpecificPart, network))
+            } ?: return Bip21URI(address = uri.schemeSpecificPart)
 
             require(parameters.isNotEmpty()) { "Invalid URI: parameters part is empty" }
 
@@ -95,8 +97,7 @@ public data class Bip21URI(
                 key to value
             }
 
-            val validatedAddress = Address(address, network)
-            val amount: Satoshi? = parametersMap["amount"]?.let { bitcoinToSatoshi(it) }
+            val amount: Satoshi? = parametersMap["amount"]?.satoshi()
             val label: String? = parametersMap["label"]
             val message: String? = parametersMap["message"]
             val other: Map<String, String>? = parametersMap
@@ -104,38 +105,12 @@ public data class Bip21URI(
                 .takeIf { it.isNotEmpty() }
 
             return Bip21URI(
-                address = validatedAddress,
+                address = address,
                 amount = amount,
                 label = label,
                 message = message,
                 otherParameters = other
             )
-        }
-
-        /**
-         * Converts a bitcoin amount in string format to the Satoshi type defined in fr.acinq.bitcoin.Satoshi.
-         * The BIP-21 specification requires the amount to be in bitcoin using the dot (.) as a decimal separator,
-         * but working with the bitcoin unit is messy. Better to use the Satoshi type directly.
-         */
-        private fun bitcoinToSatoshi(amount: String): Satoshi {
-            val bitcoin = amount.toBigDecimal()
-            require(bitcoin >= 0.toBigDecimal()) { "Invalid amount: $amount (cannot be negative)" }
-            require(bitcoin <= 21_000_000.toBigDecimal()) { "Invalid amount: $amount (above possible number of bitcoin)" }
-
-            try {
-                val satoshi = bitcoin.multiply(100_000_000.toBigDecimal()).longValueExact()
-                return Satoshi(satoshi)
-            } catch (e: ArithmeticException) {
-                throw InvalidURIException("Invalid amount: $amount (too many decimal places)")
-            }
-        }
-
-        /**
-         * Converts a Satoshi amount to a BIP-21 valid bitcoin amount in string format.
-         * The BIP-21 specification requires the amount to be in bitcoin using the dot (.) as a decimal separator.
-         */
-        private fun satoshiToBitcoin(amount: Satoshi): String {
-            return amount.sat.toBigDecimal().divide(100_000_000.toBigDecimal()).toString()
         }
 
         /**

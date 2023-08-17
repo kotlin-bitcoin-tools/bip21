@@ -1,6 +1,5 @@
 package org.bitcointools.bip21
 
-import fr.acinq.bitcoin.Satoshi
 import org.junit.jupiter.api.Nested
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -12,11 +11,11 @@ class Bip21URITest {
     inner class Successes {
         @Test
         fun `URI only has bitcoin address`() {
-            val uri = Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd", Network.MAINNET)
+            val uri = Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd")
 
-            assertEquals<String>(
-                expected = Address("1andreas3batLhQa2FawWjeyjCqyBzypd", Network.MAINNET).value,
-                actual = uri.address.value
+            assertEquals(
+                expected = "1andreas3batLhQa2FawWjeyjCqyBzypd",
+                actual = uri.address
             )
             assertEquals(null, uri.amount)
             assertEquals(null, uri.label)
@@ -26,28 +25,28 @@ class Bip21URITest {
 
         @Test
         fun `Schema is case insensitive`() {
-            Bip21URI.fromString("BiTcOiN:1andreas3batLhQa2FawWjeyjCqyBzypd", Network.MAINNET)
-            Bip21URI.fromString("BITCOIN:1andreas3batLhQa2FawWjeyjCqyBzypd", Network.MAINNET)
-            Bip21URI.fromString("Bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd", Network.MAINNET)
+            Bip21URI.fromString("BiTcOiN:1andreas3batLhQa2FawWjeyjCqyBzypd")
+            Bip21URI.fromString("BITCOIN:1andreas3batLhQa2FawWjeyjCqyBzypd")
+            Bip21URI.fromString("Bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd")
         }
 
         @Test
         fun `URI has bech32 address in all caps`() {
-            val uri = Bip21URI.fromString("bitcoin:BC1Q0XCQPZRKY6EFF2G52QDYE53XKK9JXKVRH6YHYW", Network.MAINNET)
+            val uri = Bip21URI.fromString("bitcoin:BC1Q0XCQPZRKY6EFF2G52QDYE53XKK9JXKVRH6YHYW")
 
-            assertEquals<String>(
-                expected = Address("BC1Q0XCQPZRKY6EFF2G52QDYE53XKK9JXKVRH6YHYW", Network.MAINNET).value,
-                actual = uri.address.value
+            assertEquals(
+                expected = "BC1Q0XCQPZRKY6EFF2G52QDYE53XKK9JXKVRH6YHYW",
+                actual = uri.address
             )
         }
 
         @Test
         fun `URI with full standard parameters`() {
-            val uri = Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=50&label=Luke-Jr&message=Donation%20for%20project%20xyz", Network.MAINNET)
+            val uri = Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=50&label=Luke-Jr&message=Donation%20for%20project%20xyz")
 
             assertEquals(
-                expected = Address("1andreas3batLhQa2FawWjeyjCqyBzypd", Network.MAINNET).value,
-                actual = uri.address.value
+                expected = "1andreas3batLhQa2FawWjeyjCqyBzypd",
+                actual = uri.address
             )
 
             assertNotNull(uri.amount)
@@ -59,11 +58,11 @@ class Bip21URITest {
 
         @Test
         fun `URI has parameters we don't know`() {
-            val uri = Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=100&arg1=50&arg2=999&arg3=abc%20abc", Network.MAINNET)
+            val uri = Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=100&arg1=50&arg2=999&arg3=abc%20abc")
 
             assertEquals(
-                expected = Address("1andreas3batLhQa2FawWjeyjCqyBzypd", Network.MAINNET).value,
-                actual = uri.address.value
+                expected = "1andreas3batLhQa2FawWjeyjCqyBzypd",
+                actual = uri.address
             )
 
             assertNotNull(uri.amount)
@@ -77,16 +76,16 @@ class Bip21URITest {
 
         @Test
         fun `URI has extreme bitcoin amounts`() {
-            Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=21000000", Network.MAINNET)
-            Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=21000000.0000000000000", Network.MAINNET)
-            Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=0.00000001", Network.MAINNET)
-            Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=000000000000.00000001", Network.MAINNET)
+            Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=21000000")
+            Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=21000000.0000000000000")
+            Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=0.00000001")
+            Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=000000000000.00000001")
         }
 
         @Test
         fun `Build URI using spaces in values of label, message, and other parameters`() {
             val uri = Bip21URI(
-                address = Address("1andreas3batLhQa2FawWjeyjCqyBzypd", Network.MAINNET),
+                address = "1andreas3batLhQa2FawWjeyjCqyBzypd",
                 amount = Satoshi(5000000000),
                 label = "Kotlin Bitcoin Tools",
                 message = "Building tools for bitcoin in Kotlin",
@@ -101,7 +100,7 @@ class Bip21URITest {
         @Test
         fun `Build URI using spaces in names of parameters`() {
             val uri = Bip21URI(
-                address = Address("1andreas3batLhQa2FawWjeyjCqyBzypd", Network.MAINNET),
+                address = "1andreas3batLhQa2FawWjeyjCqyBzypd",
                 otherParameters = mapOf("other parameter 1" to "abc abc", "other parameter 2" to "def def")
             )
             assertEquals(
@@ -116,7 +115,7 @@ class Bip21URITest {
         @Test
         fun `URI doesn't use bitcoin scheme`() {
             val exception = assertFailsWith<IllegalArgumentException> {
-                Bip21URI.fromString("https://example.com", Network.MAINNET)
+                Bip21URI.fromString("https://example.com")
             }
             assertEquals("Invalid scheme: https", exception.message)
         }
@@ -124,45 +123,23 @@ class Bip21URITest {
         @Test
         fun `URI has no address`() {
             val exception = assertFailsWith<IllegalArgumentException> {
-                Bip21URI.fromString("bitcoin:", Network.MAINNET)
+                Bip21URI.fromString("bitcoin:")
             }
             assertEquals("Expected scheme-specific part at index 8: bitcoin:", exception.message)
         }
 
         @Test
-        fun `URI has invalid address`() {
-            assertFailsWith<IllegalStateException> {
-                Bip21URI.fromString("bitcoin:1yjCqd", Network.MAINNET)
-            }
-        }
-
-        @Test
-        fun `URI has valid address but wrong network`() {
-            val exception = assertFailsWith<IllegalStateException> {
-                Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd", Network.TESTNET)
-            }
-            assertEquals("base58 address does not match our blockchain", exception.message)
-        }
-
-        @Test
         fun `URI has question mark character but empty query`() {
             val exception = assertFailsWith<IllegalArgumentException> {
-                Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?", Network.TESTNET)
+                Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?")
             }
             assertEquals("Invalid URI: parameters part is empty", exception.message)
         }
 
         @Test
-        fun `URI is missing question mark between path and query`() {
-            assertFailsWith<IllegalStateException> {
-                Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypdamount=50&label=Luke-Jr&message=Donation%20for%20project%20xyz", Network.MAINNET)
-            }
-        }
-
-        @Test
         fun `URI has a parameter missing an = sign`() {
             val exception = assertFailsWith<IllegalArgumentException> {
-                Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount100&arg1=50&arg2=999&arg3=abc%20abc", Network.MAINNET)
+                Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount100&arg1=50&arg2=999&arg3=abc%20abc")
             }
             assertEquals("Invalid URI: parameter amount100 does not have a separator", exception.message)
         }
@@ -170,13 +147,13 @@ class Bip21URITest {
         @Test
         fun `URI has invalid bitcoin amounts`() {
             val exception1 = assertFailsWith<IllegalArgumentException> {
-                Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=21000001", Network.MAINNET)
+                Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=21000001")
             }
             val exception2 = assertFailsWith<IllegalArgumentException> {
-                Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=21000000.00000001", Network.MAINNET)
+                Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=21000000.00000001")
             }
-            val exception3 = assertFailsWith<InvalidURIException> {
-                Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=0.000000001", Network.MAINNET)
+            val exception3 = assertFailsWith<IllegalArgumentException> {
+                Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=0.000000001")
             }
 
             assertEquals("Invalid amount: 21000001 (above possible number of bitcoin)", exception1.message)
