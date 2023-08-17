@@ -19,6 +19,7 @@ public data class Bip21URI(
     public val amount: Satoshi? = null,
     public val label: String? = null,
     public val message: String? = null,
+    public val lightning: String? = null,
     public val otherParameters: Map<String, String>? = null,
 ) {
     /**
@@ -41,6 +42,10 @@ public data class Bip21URI(
 
                 builder.append(message?.let {
                     if (builder.last() == '?') "message=${encodeURLString(it)}" else "&message=${encodeURLString(it)}"
+                } ?: "")
+
+                builder.append(lightning?.let {
+                    if (builder.last() == '?') "lightning=$it" else "&lightning=$it"
                 } ?: "")
 
                 otherParameters?.forEach { (key, value) ->
@@ -100,8 +105,9 @@ public data class Bip21URI(
             val amount: Satoshi? = parametersMap["amount"]?.satoshi()
             val label: String? = parametersMap["label"]
             val message: String? = parametersMap["message"]
+            val lightning: String? = parametersMap["lightning"]
             val other: Map<String, String>? = parametersMap
-                .filterKeys { it !in setOf("amount", "label", "message") }
+                .filterKeys { it !in setOf("amount", "label", "message", "lightning") }
                 .takeIf { it.isNotEmpty() }
 
             return Bip21URI(
@@ -109,6 +115,7 @@ public data class Bip21URI(
                 amount = amount,
                 label = label,
                 message = message,
+                lightning = lightning,
                 otherParameters = other
             )
         }
