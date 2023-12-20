@@ -12,6 +12,11 @@ import io.ktor.http.encodeURLQueryComponent
  * Represents a BIP-21 URI.
  *
  * See [https://github.com/bitcoin/bips/blob/master/bip-0021.mediawiki](https://github.com/bitcoin/bips/blob/master/bip-0021.mediawiki) for specification.
+ *
+ * Note that while it is common for raw addresses to be displayed in QR format, they are not valid BIP21 URIs and will
+ * fail the check on the scheme when attempting to parse them using Bip21URI.fromString(). Users should parse the string
+ * returned by the scanner or other source and validate that the `bitcoin:` scheme is present before attempting to build
+ * a Bip21URI.
  */
 public data class Bip21URI(
     public val address: String,
@@ -74,7 +79,9 @@ public data class Bip21URI(
          */
         public fun fromString(input: String): Bip21URI {
             val uri = Uri.parse(input)
-            require(uri.scheme?.lowercase() == "bitcoin") { "Invalid scheme: ${uri.scheme}" }
+            require(uri.scheme?.lowercase() == "bitcoin") {
+                "Invalid scheme '${input.take(8)}', expected 'bitcoin:'"
+            }
 
             // This recasts the nullable String? as String and allows us to not have to null-check
             // on further calls below. It's not clear when the schemeSpecificPart could be null (I've only ever seen it empty).

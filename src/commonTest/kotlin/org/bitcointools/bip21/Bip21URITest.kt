@@ -7,6 +7,14 @@ import kotlin.test.assertNotNull
 
 class Bip21URITest {
     @Test
+    fun `URI cannot be built if scheme is not present`() {
+        val uri = "1andreas3batLhQa2FawWjeyjCqyBzypd"
+        assertFailsWith<IllegalArgumentException> {
+            Bip21URI.fromString(uri)
+        }
+    }
+
+    @Test
     fun `URI only has bitcoin address`() {
         val uri = Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd")
 
