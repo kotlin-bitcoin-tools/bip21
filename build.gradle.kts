@@ -3,9 +3,11 @@ plugins {
     id("java-library")
     id("maven-publish")
     id("org.jetbrains.dokka") version "1.9.0"
+    id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
 }
 
-val libraryVersion: String by project
+version = "0.0.4-SNAPSHOT"
+group = "org.kotlinbitcointools"
 
 repositories {
     mavenCentral()
@@ -58,17 +60,55 @@ kotlin {
             }
         }
     }
-
 }
 
 publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            groupId = "org.bitcointools"
-            artifactId = "bip21"
-            version = libraryVersion
+    publications.withType<MavenPublication>().configureEach {
+        pom {
+            name.set("bip21")
+            description.set("A library to parse and generate BIP21 URIs.")
+            url.set("https://github.com/kotlin-bitcoin-tools")
+            licenses {
+                license {
+                    name.set("The Apache License, Version 2.0")
+                    url.set("https://github.com/kotlin-bitcoin-tools/bip21/blob/master/LICENSE.txt")
+                }
+            }
+            developers {
+                developer {
+                    id.set("thunderbiscuit")
+                    name.set("thunderbiscuit")
+                    email.set("thunderbiscuit@protonmail.com")
+                }
+            }
+            scm {
+                connection.set("smc:git:https://github.com:kotlin-bitcoin-tools/bip21.git")
+                developerConnection.set("smc:git:git@github.com:kotlin-bitcoin-tools/bip21.git")
+                url.set("https://github.com/kotlin-bitcoin-tools/bip21")
+            }
+        }
+    }
+    // publications {
+    //     create<MavenPublication>("Maven") {
+    //         groupId = "org.kotlinbitcointools"
+    //         artifactId = "bip21"
+    //         version = version
+    //
+    //         from(components["kotlin"])
+    //     }
+    // }
+}
 
-            from(components["java"])
+nexusPublishing {
+    repositories {
+        create("sonatype") {
+            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+
+            val ossrhUsername: String? by project
+            val ossrhPassword: String? by project
+            username.set(ossrhUsername)
+            password.set(ossrhPassword)
         }
     }
 }
@@ -77,7 +117,8 @@ tasks.withType<org.jetbrains.dokka.gradle.DokkaTask>().configureEach {
     dokkaSourceSets {
         named("commonMain") {
             moduleName.set("bip21")
-            moduleVersion.set(libraryVersion)
+            moduleVersion.set("0.0.4-SNAPSHOT")
+            // moduleVersion.set(version)
             // includes.from("Module.md")
             // samples.from("src/test/kotlin/org/bitcointools/bip21/Samples.kt")
         }
