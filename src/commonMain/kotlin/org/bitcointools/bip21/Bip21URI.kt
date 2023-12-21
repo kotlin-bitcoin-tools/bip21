@@ -11,12 +11,13 @@ import io.ktor.http.encodeURLQueryComponent
 /**
  * Represents a BIP-21 URI.
  *
- * See [https://github.com/bitcoin/bips/blob/master/bip-0021.mediawiki](https://github.com/bitcoin/bips/blob/master/bip-0021.mediawiki) for specification.
+ * See [https://github.com/bitcoin/bips/blob/master/bip-0021.mediawiki](https://github.com/bitcoin/bips/blob/master/bip-0021.mediawiki)
+ * for specification.
  *
- * Note that while it is common for raw addresses to be displayed in QR format, they are not valid BIP21 URIs and will
- * fail the check on the scheme when attempting to parse them using Bip21URI.fromString(). Users should parse the string
- * returned by the scanner or other source and validate that the `bitcoin:` scheme is present before attempting to build
- * a Bip21URI.
+ * Note that while it is common for raw addresses to be displayed in QR format, they are not valid BIP21 URIs on their
+ * own and will fail the check on the scheme when attempting to parse them using Bip21URI.fromString(). Users should
+ * parse the string returned by the scanner or other source and validate that the `bitcoin:` scheme is present before
+ * attempting to build a Bip21URI.
  */
 public data class Bip21URI(
     public val address: String,
@@ -30,10 +31,6 @@ public data class Bip21URI(
      * Return a string representation of the URI.
      */
     public fun toURI(): String {
-        // The BIP-21 specification requires strings for query components be sanitized to make
-        // them safe to include in URIs. Moreover, the percent-encoded space (%20) must be used as per RFC 3986
-        // instead of the sometimes-used '+' character. This string encoding is what the
-        // io.ktor.http.encodeURLQueryComponent() String extension function provides.
         StringBuilder("bitcoin:$address").let { builder ->
             if (amount == null && label == null && message == null && otherParameters == null) {
                 return builder.toString()
@@ -41,21 +38,41 @@ public data class Bip21URI(
                 builder.append("?")
 
                 builder.append(amount?.let {
-                    if (builder.last() == '?') "amount=${it.toBitcoin()}" else "&amount=${it.toBitcoin()}"
+                    if (builder.last() == '?') {
+                        "amount=${it.toBitcoin()}"
+                    } else {
+                        "&amount=${it.toBitcoin()}"
+                    }
                 } ?: "")
 
                 builder.append(label?.let {
-                    if (builder.last() == '?') "label=${it.encodeURLQueryComponent(encodeFull = true)}" else "&label=${it.encodeURLQueryComponent(encodeFull = true)}"
+                    if (builder.last() == '?') {
+                        "label=${it.encodeURLQueryComponent(encodeFull = true)}"
+                    } else {
+                        "&label=${it.encodeURLQueryComponent(encodeFull = true)}"
+                    }
                 } ?: "")
 
                 builder.append(message?.let {
-                    if (builder.last() == '?') "message=${it.encodeURLQueryComponent(encodeFull = true)}" else "&message=${it.encodeURLQueryComponent(encodeFull = true)}"
+                    if (builder.last() == '?') {
+                        "message=${it.encodeURLQueryComponent(encodeFull = true)}"
+                    } else {
+                        "&message=${it.encodeURLQueryComponent(encodeFull = true)}"
+                    }
                 } ?: "")
 
                 builder.append(lightning?.let {
-                    if (builder.last() == '?') "lightning=${it.encodeURLQueryComponent()}" else "&lightning=${it.encodeURLQueryComponent()}"
+                    if (builder.last() == '?') {
+                        "lightning=${it.encodeURLQueryComponent()}"
+                    } else {
+                        "&lightning=${it.encodeURLQueryComponent()}"
+                    }
                 } ?: "")
 
+                // The BIP-21 specification requires strings for query components be sanitized to make
+                // them safe to include in URIs. Moreover, the percent-encoded space (%20) must be used as per RFC 3986
+                // instead of the sometimes-used '+' character. This string encoding is what the
+                // io.ktor.http.encodeURLQueryComponent() String extension function provides.
                 otherParameters?.forEach { (key, value) ->
                     val element = if (builder.last() == '?') {
                         "${key.encodeURLQueryComponent(encodeFull = true)}=${value.encodeURLQueryComponent(encodeFull = true)}"
@@ -97,7 +114,7 @@ public data class Bip21URI(
             // We cannot use the uri.getQueryParameterNames() API to get the parameters and their values
             // because the URI is classified as non-hierarchical, which means the API is not available.
             val query = uri.query ?: throw InvalidURIException("Query part is null")
-            val parametersMap = buildParametersMap(query)
+            val parametersMap: Map<String, String> = buildParametersMap(query)
 
             val amount: Satoshi? = parametersMap["amount"]?.fromBitcoinAmountToSatoshi()
             val label: String? = parametersMap["label"]
@@ -117,9 +134,10 @@ public data class Bip21URI(
             )
         }
 
-        // Deconstruct the query part into a map of key-value pairs. This method also checks
-        // that there are no duplicate keys and throw if any are found because the
-        // later ones would override the earlier ones.
+        /**
+         * Deconstruct the query part into a map of key-value pairs. This method also checks that there are no duplicate
+         * keys and throw if any are found because the later ones would override the earlier ones.
+         */
         private fun buildParametersMap(query: String): Map<String, String> {
             // If there are no characters past the ? character, throw
             require(query.isNotEmpty()) { "? character indicates query part but the part is empty" }
