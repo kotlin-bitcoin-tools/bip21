@@ -147,7 +147,7 @@ class Bip21URITest {
         val exception = assertFailsWith<IllegalArgumentException> {
             Bip21URI.fromString("https://example.com")
         }
-        assertEquals("Invalid scheme: https", exception.message)
+        assertEquals("Invalid scheme 'https://', expected 'bitcoin:'", exception.message)
     }
 
     @Test
