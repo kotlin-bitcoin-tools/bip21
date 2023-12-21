@@ -1,13 +1,12 @@
 plugins {
     id("org.jetbrains.kotlin.multiplatform") version "1.9.0"
-    id("java-library")
-    id("maven-publish")
+    id("org.gradle.maven-publish")
     id("org.jetbrains.dokka") version "1.9.0"
     id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
 }
 
-version = "0.0.4-SNAPSHOT"
 group = "org.kotlinbitcointools"
+version = "0.0.4-SNAPSHOT"
 
 repositories {
     mavenCentral()
