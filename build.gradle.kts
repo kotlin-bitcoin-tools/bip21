@@ -42,7 +42,9 @@ kotlin {
         }
     }
 
-    ios()
+    iosArm64()          // iPhone and iPad
+    iosX64()            // x86_64 simulator (Intel-based macs)
+    iosSimulatorArm64() // arm64 simulator (Apple Silicon macs)
 
     sourceSets {
         val commonMain by getting {
