@@ -61,12 +61,23 @@ class Bip21URITest {
     fun `URI with full standard parameters`() {
         val uri = Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=50&label=Luke-Jr&message=Donation%20for%20project%20xyz")
 
-        println(uri.toURI())
         assertEquals("1andreas3batLhQa2FawWjeyjCqyBzypd", uri.address)
         assertNotNull(uri.amount)
         assertEquals(Amount(5000000000), uri.amount)
         assertEquals(Label("Luke-Jr"), uri.label)
         assertEquals(Message("Donation for project xyz"), uri.message)
+        assertEquals(null, uri.otherParameters)
+    }
+
+    @Test
+    fun `URI with question mark character`() {
+        val uri = Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=50&label=Luke-Jr&message=Donation?%20for%20project%20xyz")
+
+        assertEquals("1andreas3batLhQa2FawWjeyjCqyBzypd", uri.address)
+        assertNotNull(uri.amount)
+        assertEquals(Amount(5000000000), uri.amount)
+        assertEquals(Label("Luke-Jr"), uri.label)
+        assertEquals(Message("Donation? for project xyz"), uri.message)
         assertEquals(null, uri.otherParameters)
     }
 
@@ -154,6 +165,14 @@ class Bip21URITest {
     }
 
     @Test
+    fun `URI has duplicate parameters`() {
+        val exception = assertFailsWith<InvalidURIException> {
+            Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=100&amount=50")
+        }
+        assertEquals("Invalid URI: duplicate parameter amount", exception.message)
+    }
+
+    @Test
     fun `URI doesn't use bitcoin scheme`() {
         val exception = assertFailsWith<IllegalArgumentException> {
             Bip21URI.fromString("https://example.com")
@@ -174,11 +193,11 @@ class Bip21URITest {
         val exception = assertFailsWith<IllegalArgumentException> {
             Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?")
         }
-        assertEquals("? character indicates query part but the part is empty", exception.message)
+        assertEquals("'?' character indicates query part but the part is empty", exception.message)
     }
 
     @Test
-    fun `URI has a parameter missing an = sign`() {
+    fun `URI has a parameter missing an '=' sign`() {
         val exception = assertFailsWith<IllegalArgumentException> {
             Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount100&arg1=50&arg2=999&arg3=abc%20abc")
         }
