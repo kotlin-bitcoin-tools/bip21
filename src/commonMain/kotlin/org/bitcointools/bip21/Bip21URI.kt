@@ -20,7 +20,7 @@ import com.eygraber.uri.Uri
  */
 public data class Bip21URI(
     public val address: String,
-    public val amount: Satoshi? = null,
+    public val amount: Amount? = null,
     public val label: Label? = null,
     public val message: Message? = null,
     public val lightning: Lightning? = null,
@@ -37,7 +37,7 @@ public data class Bip21URI(
         }
 
         val parameters = StringBuilder().let { builder ->
-            builder.append(amount?.let { "&amount=${it.toBitcoin()}" } ?: "")
+            builder.append(amount?.let { amount.encode() } ?: "")
             builder.append(label?.let { label.encode() } ?: "")
             builder.append(message?.let { message.encode() } ?: "")
             builder.append(lightning?.let { lightning.encode() } ?: "")
@@ -78,7 +78,7 @@ public data class Bip21URI(
             val query = uri.query ?: throw InvalidURIException("Query part is null")
             val parametersMap: Map<String, String> = buildParametersMap(query)
 
-            val amount: Satoshi? = parametersMap["amount"]?.fromBitcoinAmountToSatoshi()
+            val amount: Amount? = parametersMap["amount"]?.fromBitcoinIntoAmount()
             val label: Label? = parametersMap["label"]?.let { Label(it) }
             val message: Message? = parametersMap["message"]?.let { Message(it) }
             val lightning: Lightning? = parametersMap["lightning"]?.let { Lightning(it) }

@@ -50,13 +50,10 @@ class Bip21URITest {
     fun `URI with full standard parameters`() {
         val uri = Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=50&label=Luke-Jr&message=Donation%20for%20project%20xyz")
 
-        assertEquals(
-            expected = "1andreas3batLhQa2FawWjeyjCqyBzypd",
-            actual = uri.address
-        )
-
+        println(uri.toURI())
+        assertEquals("1andreas3batLhQa2FawWjeyjCqyBzypd", uri.address)
         assertNotNull(uri.amount)
-        assertEquals<Long>(Satoshi(5000000000).sat, uri.amount!!.sat)
+        assertEquals(Amount(5000000000), uri.amount)
         assertEquals(Label("Luke-Jr"), uri.label)
         assertEquals(Message("Donation for project xyz"), uri.message)
         assertEquals(null, uri.otherParameters)
@@ -66,13 +63,9 @@ class Bip21URITest {
     fun `URI has parameters we don't know`() {
         val uri = Bip21URI.fromString("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=100&arg1=50&arg2=999&arg3=abc%20abc")
 
-        assertEquals(
-            expected = "1andreas3batLhQa2FawWjeyjCqyBzypd",
-            actual = uri.address
-        )
-
+        assertEquals("1andreas3batLhQa2FawWjeyjCqyBzypd", uri.address)
         assertNotNull(uri.amount)
-        assertEquals(Satoshi(10_000_000_000L).sat, uri.amount!!.sat)
+        assertEquals(Amount(10_000_000_000L), uri.amount)
         assertEquals(null, uri.label)
         assertEquals(null, uri.message)
         assertTrue(uri.otherParameters?.contains(OtherParameter(key = "arg1", value = "50")) == true )
@@ -92,7 +85,7 @@ class Bip21URITest {
     fun `Build URI using spaces in values of label message and other parameters`() {
         val uri = Bip21URI(
             address = "1andreas3batLhQa2FawWjeyjCqyBzypd",
-            amount = Satoshi(5000000000),
+            amount = Amount(5000000000),
             label = Label("Kotlin Bitcoin Tools"),
             message = Message("Building tools for bitcoin in Kotlin"),
             otherParameters = listOf(
@@ -137,7 +130,7 @@ class Bip21URITest {
     fun `Correctly creates unified QRs`() {
         val uri = Bip21URI(
             address = "BC1QYLH3U67J673H6Y6ALV70M0PL2YZ53TZHVXGG7U",
-            amount = "0.00001".fromBitcoinAmountToSatoshi(),
+            amount = "0.00001".fromBitcoinIntoAmount(),
             label = Label("sbddesign: For lunch Tuesday"),
             message = Message("For lunch Tuesday"),
             lightning = Lightning("LNO1PG257ENXV4EZQCNEYPE82UM50YNHXGRWDAJX283QFWDPL28QQMC78YMLVHMXCSYWDK5WRJNJ36JRYG488QWLRNZYJCZS")
