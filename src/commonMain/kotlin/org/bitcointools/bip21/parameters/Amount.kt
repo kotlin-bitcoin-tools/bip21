@@ -40,13 +40,13 @@ public data class Amount(public val sat: Long) : Parameter {
          * The BIP-21 specification requires the amount be in bitcoin using the dot (.) as a decimal separator,
          * but working with the bitcoin unit is messy. Better to use the satoshi unit directly.
          */
-        public fun decode(amount: String): Amount {
-            val bitcoin = amount.toBigDecimal()
-            require(bitcoin >= 0.toBigDecimal()) { "Invalid amount: $amount (cannot be negative)" }
-            require(bitcoin <= MAX_BITCOIN.toBigDecimal()) { "Invalid amount: $amount (above possible number of bitcoin)" }
+        public fun decode(uriString: String): Amount {
+            val bitcoin = uriString.toBigDecimal()
+            require(bitcoin >= 0.toBigDecimal()) { "Invalid amount: $uriString (cannot be negative)" }
+            require(bitcoin <= MAX_BITCOIN.toBigDecimal()) { "Invalid amount: $uriString (above possible number of bitcoin)" }
 
             val satoshis = (bitcoin * 100_000_000.toBigDecimal()).toStringExpanded()
-            require(!satoshis.contains(".")) { "Invalid amount: $amount (too many decimal places)"}
+            require(!satoshis.contains(".")) { "Invalid amount: $uriString (too many decimal places)"}
 
             return Amount(sat = satoshis.toLong())
         }

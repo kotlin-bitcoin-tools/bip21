@@ -17,6 +17,6 @@ public data class Message(val value: String) : Parameter {
     override fun encode(): String = "&message=${value.encodeURLQueryComponent(encodeFull = true)}"
 
     public companion object {
-        public fun decodeFrom(sanitizedString: String): Message = Message(sanitizedString.decodeURLQueryComponent())
+        public fun decodeFrom(uriString: String): Message = Message(uriString.decodeURLQueryComponent())
     }
 }
