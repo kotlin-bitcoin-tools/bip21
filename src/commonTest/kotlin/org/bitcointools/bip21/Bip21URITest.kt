@@ -4,6 +4,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 class Bip21URITest {
     @Test
@@ -56,8 +57,8 @@ class Bip21URITest {
 
         assertNotNull(uri.amount)
         assertEquals<Long>(Satoshi(5000000000).sat, uri.amount!!.sat)
-        assertEquals("Luke-Jr", uri.label)
-        assertEquals("Donation for project xyz", uri.message)
+        assertEquals(Label("Luke-Jr"), uri.label)
+        assertEquals(Message("Donation for project xyz"), uri.message)
         assertEquals(null, uri.otherParameters)
     }
 
@@ -74,9 +75,9 @@ class Bip21URITest {
         assertEquals(Satoshi(10_000_000_000L).sat, uri.amount!!.sat)
         assertEquals(null, uri.label)
         assertEquals(null, uri.message)
-        assertEquals("50", uri.otherParameters?.get("arg1"))
-        assertEquals("999", uri.otherParameters?.get("arg2"))
-        assertEquals("abc abc", uri.otherParameters?.get("arg3"))
+        assertTrue(uri.otherParameters?.contains(OtherParameter(key = "arg1", value = "50")) == true )
+        assertTrue(uri.otherParameters?.contains(OtherParameter(key = "arg2", value = "999")) == true )
+        assertTrue(uri.otherParameters?.contains(OtherParameter(key = "arg3", value = "abc abc")) == true )
     }
 
     @Test
@@ -92,9 +93,12 @@ class Bip21URITest {
         val uri = Bip21URI(
             address = "1andreas3batLhQa2FawWjeyjCqyBzypd",
             amount = Satoshi(5000000000),
-            label = "Kotlin Bitcoin Tools",
-            message = "Building tools for bitcoin in Kotlin",
-            otherParameters = mapOf("otherparameter1" to "abc abc", "otherparameter2" to "def def")
+            label = Label("Kotlin Bitcoin Tools"),
+            message = Message("Building tools for bitcoin in Kotlin"),
+            otherParameters = listOf(
+                OtherParameter("otherparameter1", "abc abc"),
+                OtherParameter("otherparameter2", "def def")
+            )
         )
         assertEquals(
             expected = "bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=50&label=Kotlin%20Bitcoin%20Tools&message=Building%20tools%20for%20bitcoin%20in%20Kotlin&otherparameter1=abc%20abc&otherparameter2=def%20def",
@@ -106,7 +110,10 @@ class Bip21URITest {
     fun `Build URI using spaces in names of parameters`() {
         val uri = Bip21URI(
             address = "1andreas3batLhQa2FawWjeyjCqyBzypd",
-            otherParameters = mapOf("other parameter 1" to "abc abc", "other parameter 2" to "def def")
+            otherParameters = listOf(
+                OtherParameter("other parameter 1", "abc abc"),
+                OtherParameter("other parameter 2", "def def")
+            )
         )
         assertEquals(
             expected = "bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?other%20parameter%201=abc%20abc&other%20parameter%202=def%20def",
@@ -121,7 +128,7 @@ class Bip21URITest {
         val uri = Bip21URI.fromString(unifiedQr)
 
         assertEquals(
-            expected = "LNBC10U1P3PJ257PP5YZTKWJCZ5FTL5LAXKAV23ZMZEKAW37ZK6KMV80PK4XAEV5QHTZ7QDPDWD3XGER9WD5KWM36YPRX7U3QD36KUCMGYP282ETNV3SHJCQZPGXQYZ5VQSP5USYC4LK9CHSFP53KVCNVQ456GANH60D89REYKDNGSMTJ6YW3NHVQ9QYYSSQJCEWM5CJWZ4A6RFJX77C490YCED6PEMK0UPKXHY89CMM7SCT66K8GNEANWYKZGDRWRFJE69H9U5U0W57RRCSYSAS7GADWMZXC8C6T0SPJAZUP6",
+            expected = Lightning("LNBC10U1P3PJ257PP5YZTKWJCZ5FTL5LAXKAV23ZMZEKAW37ZK6KMV80PK4XAEV5QHTZ7QDPDWD3XGER9WD5KWM36YPRX7U3QD36KUCMGYP282ETNV3SHJCQZPGXQYZ5VQSP5USYC4LK9CHSFP53KVCNVQ456GANH60D89REYKDNGSMTJ6YW3NHVQ9QYYSSQJCEWM5CJWZ4A6RFJX77C490YCED6PEMK0UPKXHY89CMM7SCT66K8GNEANWYKZGDRWRFJE69H9U5U0W57RRCSYSAS7GADWMZXC8C6T0SPJAZUP6"),
             actual = uri.lightning
         )
     }
@@ -131,9 +138,9 @@ class Bip21URITest {
         val uri = Bip21URI(
             address = "BC1QYLH3U67J673H6Y6ALV70M0PL2YZ53TZHVXGG7U",
             amount = "0.00001".fromBitcoinAmountToSatoshi(),
-            label = "sbddesign: For lunch Tuesday",
-            message = "For lunch Tuesday",
-            lightning = "LNO1PG257ENXV4EZQCNEYPE82UM50YNHXGRWDAJX283QFWDPL28QQMC78YMLVHMXCSYWDK5WRJNJ36JRYG488QWLRNZYJCZS"
+            label = Label("sbddesign: For lunch Tuesday"),
+            message = Message("For lunch Tuesday"),
+            lightning = Lightning("LNO1PG257ENXV4EZQCNEYPE82UM50YNHXGRWDAJX283QFWDPL28QQMC78YMLVHMXCSYWDK5WRJNJ36JRYG488QWLRNZYJCZS")
         )
 
         assertEquals(

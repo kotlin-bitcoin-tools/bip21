@@ -6,7 +6,6 @@
 package org.bitcointools.bip21
 
 import com.eygraber.uri.Uri
-import io.ktor.http.encodeURLQueryComponent
 
 /**
  * Represents a BIP-21 URI.
@@ -22,69 +21,32 @@ import io.ktor.http.encodeURLQueryComponent
 public data class Bip21URI(
     public val address: String,
     public val amount: Satoshi? = null,
-    public val label: String? = null,
-    public val message: String? = null,
-    public val lightning: String? = null,
-    public val otherParameters: Map<String, String>? = null,
+    public val label: Label? = null,
+    public val message: Message? = null,
+    public val lightning: Lightning? = null,
+    public val otherParameters: List<OtherParameter>? = null,
 ) {
     /**
      * Return a string representation of the URI.
      */
     public fun toURI(): String {
-        StringBuilder("bitcoin:$address").let { builder ->
-            if (amount == null && label == null && message == null && otherParameters == null) {
-                return builder.toString()
-            } else {
-                builder.append("?")
+        val schemeAndAddress: String = "bitcoin:$address"
 
-                builder.append(amount?.let {
-                    if (builder.last() == '?') {
-                        "amount=${it.toBitcoin()}"
-                    } else {
-                        "&amount=${it.toBitcoin()}"
-                    }
-                } ?: "")
-
-                builder.append(label?.let {
-                    if (builder.last() == '?') {
-                        "label=${it.encodeURLQueryComponent(encodeFull = true)}"
-                    } else {
-                        "&label=${it.encodeURLQueryComponent(encodeFull = true)}"
-                    }
-                } ?: "")
-
-                builder.append(message?.let {
-                    if (builder.last() == '?') {
-                        "message=${it.encodeURLQueryComponent(encodeFull = true)}"
-                    } else {
-                        "&message=${it.encodeURLQueryComponent(encodeFull = true)}"
-                    }
-                } ?: "")
-
-                builder.append(lightning?.let {
-                    if (builder.last() == '?') {
-                        "lightning=${it.encodeURLQueryComponent()}"
-                    } else {
-                        "&lightning=${it.encodeURLQueryComponent()}"
-                    }
-                } ?: "")
-
-                // The BIP-21 specification requires strings for query components be sanitized to make
-                // them safe to include in URIs. Moreover, the percent-encoded space (%20) must be used as per RFC 3986
-                // instead of the sometimes-used '+' character. This string encoding is what the
-                // io.ktor.http.encodeURLQueryComponent() String extension function provides.
-                otherParameters?.forEach { (key, value) ->
-                    val element = if (builder.last() == '?') {
-                        "${key.encodeURLQueryComponent(encodeFull = true)}=${value.encodeURLQueryComponent(encodeFull = true)}"
-                    } else {
-                        "&${key.encodeURLQueryComponent(encodeFull = true)}=${value.encodeURLQueryComponent(encodeFull = true)}"
-                    }
-                    builder.append(element)
-                }
-
-                return builder.toString()
-            }
+        if (amount == null && label == null && message == null && otherParameters == null) {
+            return schemeAndAddress
         }
+
+        val parameters = StringBuilder().let { builder ->
+            builder.append(amount?.let { "&amount=${it.toBitcoin()}" } ?: "")
+            builder.append(label?.let { label.encode() } ?: "")
+            builder.append(message?.let { message.encode() } ?: "")
+            builder.append(lightning?.let { lightning.encode() } ?: "")
+            otherParameters?.forEach { otherParameter -> builder.append(otherParameter.encode()) }
+            builder.deleteAt(0) // Remove the first '&' character
+            builder.toString()
+        }
+
+        return "$schemeAndAddress?$parameters"
     }
 
     public companion object {
@@ -117,12 +79,13 @@ public data class Bip21URI(
             val parametersMap: Map<String, String> = buildParametersMap(query)
 
             val amount: Satoshi? = parametersMap["amount"]?.fromBitcoinAmountToSatoshi()
-            val label: String? = parametersMap["label"]
-            val message: String? = parametersMap["message"]
-            val lightning: String? = parametersMap["lightning"]
-            val other: Map<String, String>? = parametersMap
+            val label: Label? = parametersMap["label"]?.let { Label(it) }
+            val message: Message? = parametersMap["message"]?.let { Message(it) }
+            val lightning: Lightning? = parametersMap["lightning"]?.let { Lightning(it) }
+            val other: List<OtherParameter>? = parametersMap
                 .filterKeys { it !in setOf("amount", "label", "message", "lightning") }
                 .takeIf { it.isNotEmpty() }
+                ?.map { OtherParameter(it.key, it.value) }
 
             return Bip21URI(
                 address = address,

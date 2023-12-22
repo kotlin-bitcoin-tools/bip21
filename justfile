@@ -1,5 +1,5 @@
-test:
-  ./gradlew test
+jvmtest:
+  ./gradlew jvmTest
 
 onetest TEST:
   ./gradlew test --tests {{TEST}}
