@@ -1,5 +1,16 @@
+/*
+ * Copyright 2023 kotlin-bitcoin-tools and contributors.
+ * Use of this source code is governed by the Apache 2.0 license that can be found in the ./LICENSE.txt file.
+ */
+
 package org.bitcointools.bip21
 
+import org.bitcointools.bip21.parameters.Amount
+import org.bitcointools.bip21.parameters.Label
+import org.bitcointools.bip21.parameters.Lightning
+import org.bitcointools.bip21.parameters.Message
+import org.bitcointools.bip21.parameters.OtherParameter
+import org.bitcointools.bip21.parameters.fromBitcoinIntoAmount
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith

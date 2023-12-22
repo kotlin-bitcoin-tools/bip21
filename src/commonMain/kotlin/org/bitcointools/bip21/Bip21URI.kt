@@ -6,6 +6,12 @@
 package org.bitcointools.bip21
 
 import com.eygraber.uri.Uri
+import org.bitcointools.bip21.parameters.Amount
+import org.bitcointools.bip21.parameters.Label
+import org.bitcointools.bip21.parameters.Lightning
+import org.bitcointools.bip21.parameters.Message
+import org.bitcointools.bip21.parameters.OtherParameter
+import org.bitcointools.bip21.parameters.fromBitcoinIntoAmount
 
 /**
  * Represents a BIP-21 URI.

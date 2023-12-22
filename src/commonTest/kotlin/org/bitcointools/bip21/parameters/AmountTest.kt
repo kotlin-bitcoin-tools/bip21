@@ -1,5 +1,7 @@
-package org.bitcointools.bip21
+package org.bitcointools.bip21.parameters
 
+import org.bitcointools.bip21.parameters.Amount
+import org.bitcointools.bip21.parameters.fromBitcoinIntoAmount
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
