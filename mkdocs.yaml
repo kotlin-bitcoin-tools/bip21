@@ -1,4 +1,6 @@
 site_name: "org.kotlinbitcointools.bip21"
+repo_name: "kotlin-bitcoin-tools/bip21"
+repo_url: https://github.com/kotlin-bitcoin-tools/bip21
 
 theme:
   name: material
@@ -41,3 +43,4 @@ nav:
   - About: index.md
   - Install: install.md
   - Usage: usage.md
+  - API Docs: ./api/

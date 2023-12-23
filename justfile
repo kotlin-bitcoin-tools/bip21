@@ -6,3 +6,6 @@ onetest TEST:
 
 serve:
   mkdocs serve
+
+dokka:
+   ./gradlew dokkaHtml
