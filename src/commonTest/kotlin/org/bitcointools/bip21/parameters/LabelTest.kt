@@ -21,4 +21,10 @@ class LabelTest {
         val label = Label.decodeFrom("Donation%20for%20project%20xyz")
         assertEquals("Donation for project xyz", label.value)
     }
+
+    @Test
+    fun `Build a label parameter from a string with spaces`() {
+        val label = Label.decodeFrom("Donation for project xyz")
+        assertEquals("Donation for project xyz", label.value)
+    }
 }
