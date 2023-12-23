@@ -119,9 +119,8 @@ tasks.withType<org.jetbrains.dokka.gradle.DokkaTask>().configureEach {
         named("commonMain") {
             moduleName.set("bip21")
             moduleVersion.set("0.0.4-SNAPSHOT")
-            // moduleVersion.set(version)
             // includes.from("Module.md")
-            // samples.from("src/test/kotlin/org/bitcointools/bip21/Samples.kt")
+            samples.from("src/commonTest/kotlin/org/bitcointools/bip21/Samples.kt")
         }
     }
 }

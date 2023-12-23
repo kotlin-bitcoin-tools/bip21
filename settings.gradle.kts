@@ -1,4 +1,13 @@
 rootProject.name = "bip21"
 
-plugins {}
-// include("lib")
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+    }
+}
+
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+}

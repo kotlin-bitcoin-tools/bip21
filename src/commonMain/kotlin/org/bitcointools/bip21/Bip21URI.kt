@@ -23,6 +23,9 @@ import org.bitcointools.bip21.parameters.fromBitcoinIntoAmount
  * own and will fail the check on the scheme when attempting to parse them using Bip21URI.fromString(). Users should
  * parse the string returned by the scanner or other source and validate that the `bitcoin:` scheme is present before
  * attempting to build a Bip21URI.
+ *
+ * @sample org.bitcointools.bip21.buildBip21URIWithAnAddress
+ * @sample org.bitcointools.bip21.buildComplexUri
  */
 public data class Bip21URI(
     public val address: String,
@@ -60,6 +63,8 @@ public data class Bip21URI(
          * Parse a BIP-21 URI string into a Bip21URI object.
          * Note that because we don't validate addresses in this library, it's possible to have a correctly formed BIP-0021
          * URI that does not have a valid address. Users should validate themselves the address for the network they use.
+         *
+         * @sample org.bitcointools.bip21.decodeBip21URI
          */
         public fun fromUri(input: String): Bip21URI {
             val uri = Uri.parse(input)
