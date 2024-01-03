@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "org.kotlinbitcointools"
-version = "0.0.4-SNAPSHOT"
+version = "0.0.5-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -118,7 +118,7 @@ tasks.withType<org.jetbrains.dokka.gradle.DokkaTask>().configureEach {
     dokkaSourceSets {
         named("commonMain") {
             moduleName.set("bip21")
-            moduleVersion.set("0.0.4-SNAPSHOT")
+            moduleVersion.set("0.0.5-SNAPSHOT")
             // includes.from("Module.md")
             samples.from("src/commonTest/kotlin/org/bitcointools/bip21/Samples.kt")
         }
