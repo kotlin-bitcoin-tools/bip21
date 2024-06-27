@@ -14,5 +14,6 @@ import io.ktor.http.encodeURLQueryComponent
  * @property value The value of the parameter.
  */
 public data class OtherParameter(val key: String, val value: String) : Parameter {
-    override fun encode(): String = "&${key.encodeURLQueryComponent(encodeFull = true)}=${value.encodeURLQueryComponent(encodeFull = true)}"
+    override fun encode(): String =
+        "&${key.encodeURLQueryComponent(encodeFull = true)}=${value.encodeURLQueryComponent(encodeFull = true)}"
 }

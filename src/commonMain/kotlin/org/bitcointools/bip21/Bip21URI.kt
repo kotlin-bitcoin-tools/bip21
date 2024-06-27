@@ -61,8 +61,10 @@ public data class Bip21URI(
     public companion object {
         /**
          * Parse a BIP-21 URI string into a Bip21URI object.
-         * Note that because we don't validate addresses in this library, it's possible to have a correctly formed BIP-0021
-         * URI that does not have a valid address. Users should validate themselves the address for the network they use.
+         *
+         * Note that because we don't validate addresses in this library, it's possible to have a correctly formed
+         * BIP-21 URI that does not have a valid address. Users should validate themselves the address for the network
+         * they use.
          *
          * @sample org.bitcointools.bip21.decodeBip21URI
          */
