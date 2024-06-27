@@ -1,7 +1,8 @@
 # About
 
 !!! warning
-    This library should be considered in alpha state. Use at your own risk.
+    This library should be considered in alpha state. Please use with caution and consider helping to review it.
+
 
 The `org.kotlinbitcointools.bip21` library is an implementation of the [BIP-0021] specification. It is written in Kotlin and is intended to be used in Kotlin Multiplatform projects. Please help us review it and make it production-ready! Comments on the shape of the API are welcome. See the [issues] for discussion items and design decisions. The library is released under the Apache 2.0 license.
 
