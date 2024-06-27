@@ -1,0 +1,1 @@
+sourceset_dependencies='{":dokkaHtml/commonMain":[],":dokkaHtml/iosArm64Main":[":dokkaHtml/commonMain"],":dokkaHtml/iosSimulatorArm64Main":[":dokkaHtml/commonMain"],":dokkaHtml/iosX64Main":[":dokkaHtml/commonMain"],":dokkaHtml/jvmMain":[":dokkaHtml/commonMain"]}'
