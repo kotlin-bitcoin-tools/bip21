@@ -1,12 +1,13 @@
-site_name: "org.kotlinbitcointools.bip21"
+site_name: "Kotlin Bitcoin Tools | bip21"
 repo_name: "kotlin-bitcoin-tools/bip21"
 repo_url: https://github.com/kotlin-bitcoin-tools/bip21
 
 theme:
   name: material
-  
-#  icon:
-#    logo: material/car
+  logo: images/logo.png
+
+  # icon:
+  #   logo: images/logo.png
 
   features:
     - navigation.instant
