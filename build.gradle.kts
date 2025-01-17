@@ -1,7 +1,7 @@
 plugins {
     id("org.jetbrains.kotlin.multiplatform") version "2.1.0"
     id("org.gradle.maven-publish")
-    id("org.jetbrains.dokka") version "1.9.0"
+    id("org.jetbrains.dokka") version "2.0.0"
     id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
 }
 
@@ -118,9 +118,9 @@ tasks.withType<org.jetbrains.dokka.gradle.DokkaTask>().configureEach {
     dokkaSourceSets {
         named("commonMain") {
             moduleName.set("bip21")
-            moduleVersion.set("0.0.5-SNAPSHOT")
+            moduleVersion.set("0.1.0-SNAPSHOT")
             // includes.from("Module.md")
-            samples.from("src/commonTest/kotlin/org/bitcointools/bip21/Samples.kt")
+            samples.from("src/commonTest/kotlin/org/kotlinbitcointools/bip21/Samples.kt")
         }
     }
 }
