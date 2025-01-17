@@ -1,5 +1,5 @@
 plugins {
-    id("org.jetbrains.kotlin.multiplatform") version "1.9.0"
+    id("org.jetbrains.kotlin.multiplatform") version "2.1.0"
     id("org.gradle.maven-publish")
     id("org.jetbrains.dokka") version "1.9.0"
     id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
