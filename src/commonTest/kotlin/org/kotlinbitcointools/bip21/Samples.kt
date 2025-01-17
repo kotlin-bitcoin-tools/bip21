@@ -3,15 +3,15 @@
  * Use of this source code is governed by the Apache 2.0 license that can be found in the ./LICENSE.txt file.
  */
 
-package org.bitcointools.bip21
+package org.kotlinbitcointools.bip21
 
-import org.bitcointools.bip21.parameters.Amount
-import org.bitcointools.bip21.parameters.Label
-import org.bitcointools.bip21.parameters.Message
+import org.kotlinbitcointools.bip21.parameters.Amount
+import org.kotlinbitcointools.bip21.parameters.Label
+import org.kotlinbitcointools.bip21.parameters.Message
 
 fun buildBip21URIWithAnAddress() {
     val address: String = "1andreas3batLhQa2FawWjeyjCqyBzypd"
-    val bip21Uri = Bip21URI(address)
+    val bip21Uri = org.kotlinbitcointools.bip21.Bip21URI(address)
 
     // Bip21URI(address=1andreas3batLhQa2FawWjeyjCqyBzypd, amount=null, label=null, message=null, lightning=null, otherParameters=null)
     println(bip21Uri)
@@ -21,7 +21,7 @@ fun buildBip21URIWithAnAddress() {
 }
 
 fun buildComplexUri(){
-    val bip21URI = Bip21URI(
+    val bip21URI = org.kotlinbitcointools.bip21.Bip21URI(
         address = "1andreas3batLhQa2FawWjeyjCqyBzypd",
         amount = Amount(1000L),
         label = Label("Luke"),
@@ -33,7 +33,7 @@ fun buildComplexUri(){
 }
 
 fun decodeBip21URI(){
-    val uri = Bip21URI.fromUri("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=50&label=Luke-Jr&message=Donation%20for%20project%20xyz")
+    val uri = org.kotlinbitcointools.bip21.Bip21URI.fromUri("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=50&label=Luke-Jr&message=Donation%20for%20project%20xyz")
 
     println(uri)
     // Bip21URI(address=1andreas3batLhQa2FawWjeyjCqyBzypd, amount=Amount(value=1000), label=Label(value=Luke-Jr), message=Message(value=Donation for project xyz), lightning=null, otherParameters=null)

@@ -3,15 +3,16 @@
  * Use of this source code is governed by the Apache 2.0 license that can be found in the ./LICENSE.txt file.
  */
 
-package org.bitcointools.bip21
+package org.kotlinbitcointools.bip21
 
 import com.eygraber.uri.Uri
-import org.bitcointools.bip21.parameters.Amount
-import org.bitcointools.bip21.parameters.Label
-import org.bitcointools.bip21.parameters.Lightning
-import org.bitcointools.bip21.parameters.Message
-import org.bitcointools.bip21.parameters.OtherParameter
-import org.bitcointools.bip21.parameters.fromBitcoinIntoAmount
+import org.kotlinbitcointools.bip21.parameters.Amount
+import org.kotlinbitcointools.bip21.parameters.Label
+import org.kotlinbitcointools.bip21.parameters.Lightning
+import org.kotlinbitcointools.bip21.parameters.Message
+import org.kotlinbitcointools.bip21.parameters.OtherParameter
+import org.kotlinbitcointools.bip21.parameters.PayJoin
+import org.kotlinbitcointools.bip21.parameters.fromBitcoinIntoAmount
 
 /**
  * Represents a BIP-21 URI.
@@ -24,8 +25,8 @@ import org.bitcointools.bip21.parameters.fromBitcoinIntoAmount
  * parse the string returned by the scanner or other source and validate that the `bitcoin:` scheme is present before
  * attempting to build a Bip21URI.
  *
- * @sample org.bitcointools.bip21.buildBip21URIWithAnAddress
- * @sample org.bitcointools.bip21.buildComplexUri
+ * @sample org.kotlinbitcointools.bip21.buildBip21URIWithAnAddress
+ * @sample org.kotlinbitcointools.bip21.buildComplexUri
  */
 public data class Bip21URI(
     public val address: String,
