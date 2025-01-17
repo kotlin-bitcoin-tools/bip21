@@ -34,15 +34,21 @@ public data class Bip21URI(
     public val label: Label? = null,
     public val message: Message? = null,
     public val lightning: Lightning? = null,
+    public val pj: PayJoin? = null,
     public val otherParameters: List<OtherParameter>? = null,
 ) {
+    // The pjos parameter is required under BIP-078 (PayJoin V1) but should always be set to 0 (false) as per BIP-077
+    // (PayJoin V2). This library supports PayJoin V2 and sets the pjos parameter to false anytime there is a pj
+    // parameter defined.
+    public val pjos: Boolean? = if (pj != null) false else null
+
     /**
      * Return a string representation of the URI.
      */
     public fun toURI(): String {
         val schemeAndAddress: String = "bitcoin:$address"
 
-        if (amount == null && label == null && message == null && otherParameters == null) {
+        if (amount == null && label == null && message == null && pj == null && otherParameters == null) {
             return schemeAndAddress
         }
 
@@ -51,12 +57,18 @@ public data class Bip21URI(
             builder.append(label?.let { label.encode() } ?: "")
             builder.append(message?.let { message.encode() } ?: "")
             builder.append(lightning?.let { lightning.encode() } ?: "")
+            builder.append(pj?.let { pj.encode() } ?: "")
+            if (pj != null) builder.append("&pjos=0")
             otherParameters?.forEach { otherParameter -> builder.append(otherParameter.encode()) }
             builder.deleteAt(0) // Remove the first '&' character
             builder.toString()
         }
 
         return "$schemeAndAddress?$parameters"
+    }
+
+    override fun toString(): String {
+        return "Bip21URI(address=$address, amount=$amount, label=$label, message=$message, lightning=$lightning, pj=$pj, pjos=$pjos, otherParameters=$otherParameters)"
     }
 
     public companion object {
@@ -67,7 +79,7 @@ public data class Bip21URI(
          * BIP-21 URI that does not have a valid address. Users should validate themselves the address for the network
          * they use.
          *
-         * @sample org.bitcointools.bip21.decodeBip21URI
+         * @sample org.kotlinbitcointools.bip21.decodeBip21URI
          */
         public fun fromUri(input: String): Bip21URI {
             val uri = Uri.parse(input)
@@ -77,7 +89,9 @@ public data class Bip21URI(
 
             // This recasts the nullable String? as String and allows us to not have to null-check on further calls
             // below. It's not clear when the schemeSpecificPart could be null (I've only ever seen it empty).
-            val schemeSpecificPart: String = uri.schemeSpecificPart ?: throw InvalidURIException("Scheme specific part is null")
+            val schemeSpecificPart: String = uri.schemeSpecificPart ?: throw InvalidURIException(
+                "Scheme specific part is null"
+            )
             require(schemeSpecificPart.isNotEmpty()) { "Invalid URI: missing bitcoin address" }
 
             // If the string contains a '?' character, we deconstruct it into the address part (before the '?' and the
@@ -98,8 +112,11 @@ public data class Bip21URI(
             val label: Label? = parametersMap["label"]?.let { Label.decodeFrom(it) }
             val message: Message? = parametersMap["message"]?.let { Message.decodeFrom(it) }
             val lightning: Lightning? = parametersMap["lightning"]?.let { Lightning(it) }
+            val pj: PayJoin? = parametersMap["pj"]?.let { PayJoin(it) }
+            // The pjos parameter is special; this library only supports PayJoin V2, and therefore sets pjos=0 (false)
+            // anytime the pj parameter is present. See above for more comments on this parameter.
             val other: List<OtherParameter>? = parametersMap
-                .filterKeys { it !in setOf("amount", "label", "message", "lightning") }
+                .filterKeys { it !in setOf("amount", "label", "message", "lightning", "pj", "pjos") }
                 .takeIf { it.isNotEmpty() }
                 ?.map { OtherParameter(it.key, it.value) }
 
@@ -109,6 +126,7 @@ public data class Bip21URI(
                 label = label,
                 message = message,
                 lightning = lightning,
+                pj = pj,
                 otherParameters = other
             )
         }

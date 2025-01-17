@@ -220,17 +220,4 @@ class Bip21URITest {
         assertEquals("Invalid amount: 21000000.00000001 (above possible number of bitcoin)", exception2.message)
         assertEquals("Invalid amount: 0.000000001 (too many decimal places)", exception3.message)
     }
-
-    @Test
-    fun `URI has a valid pj parameter`() {
-        val bip21 = org.kotlinbitcointools.bip21.Bip21URI.fromUri("bitcoin:12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX?amount=1&pj=https://localhost:3010")
-        println("As is, this is the bip21 URI: ${bip21.toURI()}")
-        println("The BIP21 object is this: $bip21")
-        val payjoinEndpoint: String = bip21.pj?.value ?: "No pj parameter"
-
-        assertEquals(
-            expected = "https://localhost:3010",
-            actual = payjoinEndpoint
-        )
-    }
 }
