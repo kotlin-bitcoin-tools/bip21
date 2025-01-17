@@ -11,7 +11,7 @@ dependencyResolutionManagement {
 ```
 
 ```kotlin title="build.gradle.kts"
-implementation("org.kotlinbitcointools:bip21:0.0.4-SNAPSHOT")
+implementation("org.kotlinbitcointools:bip21:0.1.0-SNAPSHOT")
 ```
 
 ## Build and deploy locally
@@ -32,7 +32,7 @@ dependencyResolutionManagement {
 ```
 
 ```kotlin title="build.gradle.kts"
-implementation("org.kotlinbitcointools:bip21:0.0.4-SNAPSHOT")
+implementation("org.kotlinbitcointools:bip21:0.1.0-SNAPSHOT")
 ```
 
 [BIP-0021]: https://github.com/bitcoin/bips/blob/master/bip-0021.mediawiki

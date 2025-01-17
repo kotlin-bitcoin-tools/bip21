@@ -14,7 +14,7 @@ The main goals of this library are:
     - [x] Encoding and decoding QR-ready strings
     - [x] Typesafe support for all standard parameters
     - [x] Unified QRs
-    - [ ] Payjoin
+    - [x] Payjoin
   - [x] 2. Well tested
   - [ ] 3. Well documented
   - [ ] 4. Production ready
