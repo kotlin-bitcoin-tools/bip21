@@ -114,13 +114,21 @@ nexusPublishing {
     }
 }
 
-tasks.withType<org.jetbrains.dokka.gradle.DokkaTask>().configureEach {
-    dokkaSourceSets {
-        named("commonMain") {
-            moduleName.set("bip21")
-            moduleVersion.set("0.1.0-SNAPSHOT")
-            // includes.from("Module.md")
-            samples.from("src/commonTest/kotlin/org/kotlinbitcointools/bip21/Samples.kt")
+dokka {
+    moduleName.set("bip21")
+    moduleVersion.set("0.1.0-SNAPSHOT")
+    dokkaSourceSets.commonMain {
+        includes.from("MODULE.md")
+        samples.from("src/commonTest/kotlin/org/kotlinbitcointools/bip21/Samples.kt")
+        sourceLink {
+            localDirectory.set(file("src/commonMain/kotlin"))
+            remoteUrl("https://kotlin-bitcoin-tools.github.io/bip21/")
+            remoteLineSuffix.set("#L")
         }
+    }
+    pluginsConfiguration.html {
+        // customStyleSheets.from("styles.css")
+        // customAssets.from("logo.svg")
+        footerMessage.set("(c) Kotlin Bitcoin Tools Developers")
     }
 }

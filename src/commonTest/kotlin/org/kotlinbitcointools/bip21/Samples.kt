@@ -11,9 +11,9 @@ import org.kotlinbitcointools.bip21.parameters.Message
 
 fun buildBip21URIWithAnAddress() {
     val address: String = "1andreas3batLhQa2FawWjeyjCqyBzypd"
-    val bip21Uri = org.kotlinbitcointools.bip21.Bip21URI(address)
+    val bip21Uri = Bip21URI(address)
 
-    // Bip21URI(address=1andreas3batLhQa2FawWjeyjCqyBzypd, amount=null, label=null, message=null, lightning=null, otherParameters=null)
+    // Bip21URI(address=1andreas3batLhQa2FawWjeyjCqyBzypd, amount=null, label=null, message=null, lightning=null, pj=null, pjos=null, otherParameters=null)
     println(bip21Uri)
 
     // bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd
@@ -21,7 +21,7 @@ fun buildBip21URIWithAnAddress() {
 }
 
 fun buildComplexUri(){
-    val bip21URI = org.kotlinbitcointools.bip21.Bip21URI(
+    val bip21URI = Bip21URI(
         address = "1andreas3batLhQa2FawWjeyjCqyBzypd",
         amount = Amount(1000L),
         label = Label("Luke"),
@@ -33,8 +33,8 @@ fun buildComplexUri(){
 }
 
 fun decodeBip21URI(){
-    val uri = org.kotlinbitcointools.bip21.Bip21URI.fromUri("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=50&label=Luke-Jr&message=Donation%20for%20project%20xyz")
+    val uri = Bip21URI.fromUri("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=50&label=Luke-Jr&message=Donation%20for%20project%20xyz")
 
     println(uri)
-    // Bip21URI(address=1andreas3batLhQa2FawWjeyjCqyBzypd, amount=Amount(value=1000), label=Label(value=Luke-Jr), message=Message(value=Donation for project xyz), lightning=null, otherParameters=null)
+    // Bip21URI(address=1andreas3batLhQa2FawWjeyjCqyBzypd, amount=Amount(value=1000), label=Label(value=Luke-Jr), message=Message(value=Donation for project xyz), lightning=null, pj=null, pjos=null, otherParameters=null)
 }

@@ -4,3 +4,4 @@ build
 docs/api/
 site/
 .kotlin/
+.DS_Store

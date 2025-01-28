@@ -20,7 +20,7 @@ jobs:
           java-version: 17
 
       - name: "Build API documentation"
-        run: ./gradlew dokkaHtml
+        run: ./gradlew dokkaGeneratePublicationHtml
 
       - name: "Add API docs to mkdocs structure"
         run: mv ./build/dokka/html/ ./docs/api/
