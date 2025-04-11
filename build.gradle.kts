@@ -1,8 +1,11 @@
+import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
+
 plugins {
     id("org.jetbrains.kotlin.multiplatform") version "2.1.0"
     id("org.gradle.maven-publish")
     id("org.jetbrains.dokka") version "2.0.0"
     id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
+    id("org.jlleitschuh.gradle.ktlint") version "12.1.2"
 }
 
 group = "org.kotlinbitcointools"
@@ -42,8 +45,8 @@ kotlin {
         }
     }
 
-    iosArm64()          // iPhone and iPad, bip21-iosarm64
-    iosX64()            // x86_64 simulator (Intel-based macs), bip21-iosx64
+    iosArm64() // iPhone and iPad, bip21-iosarm64
+    iosX64() // x86_64 simulator (Intel-based macs), bip21-iosx64
     iosSimulatorArm64() // arm64 simulator (Apple Silicon macs), bip21-iossimulatorarm64
 
     sourceSets {
@@ -130,5 +133,13 @@ dokka {
         // customStyleSheets.from("styles.css")
         // customAssets.from("logo.svg")
         footerMessage.set("(c) Kotlin Bitcoin Tools Developers")
+    }
+}
+
+ktlint {
+    version = "1.5.0"
+    ignoreFailures = false
+    reporters {
+        reporter(ReporterType.PLAIN).apply { outputToConsole = true }
     }
 }
