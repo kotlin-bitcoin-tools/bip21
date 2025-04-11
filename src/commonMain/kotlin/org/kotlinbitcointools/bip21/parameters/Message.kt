@@ -13,11 +13,12 @@ import io.ktor.http.encodeURLQueryComponent
  *
  * @property value The value of the message.
  */
-public data class Message(val value: String) : Parameter {
+public data class Message(
+    val value: String,
+) : Parameter {
     override fun encode(): String = "&message=${value.encodeURLQueryComponent(encodeFull = true)}"
 
     public companion object {
-        public fun decodeFrom(uriString: String): Message =
-            Message(uriString.decodeURLQueryComponent())
+        public fun decodeFrom(uriString: String): Message = Message(uriString.decodeURLQueryComponent())
     }
 }

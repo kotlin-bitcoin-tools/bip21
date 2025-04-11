@@ -20,20 +20,24 @@ fun buildBip21URIWithAnAddress() {
     println(bip21Uri.toURI())
 }
 
-fun buildComplexUri(){
-    val bip21URI = Bip21URI(
-        address = "1andreas3batLhQa2FawWjeyjCqyBzypd",
-        amount = Amount(1000L),
-        label = Label("Luke"),
-        message = Message("Donation for project xyz"),
-    )
+fun buildComplexUri() {
+    val bip21URI =
+        Bip21URI(
+            address = "1andreas3batLhQa2FawWjeyjCqyBzypd",
+            amount = Amount(1000L),
+            label = Label("Luke"),
+            message = Message("Donation for project xyz"),
+        )
 
     println(bip21URI.toURI())
     // bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=0.00001&label=Luke%2DJr&message=Donation%20for%20project%20xyz
 }
 
-fun decodeBip21URI(){
-    val uri = Bip21URI.fromUri("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=50&label=Luke-Jr&message=Donation%20for%20project%20xyz")
+fun decodeBip21URI() {
+    val uri =
+        Bip21URI.fromUri(
+            "bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=50&label=Luke-Jr&message=Donation%20for%20project%20xyz",
+        )
 
     println(uri)
     // Bip21URI(address=1andreas3batLhQa2FawWjeyjCqyBzypd, amount=Amount(value=1000), label=Label(value=Luke-Jr), message=Message(value=Donation for project xyz), lightning=null, pj=null, pjos=null, otherParameters=null)

@@ -12,6 +12,8 @@ import io.ktor.http.encodeURLQueryComponent
  *
  * @property pr The payment request.
  */
-public data class Lightning(val pr: String) : Parameter {
+public data class Lightning(
+    val pr: String,
+) : Parameter {
     override fun encode(): String = "&lightning=${pr.encodeURLQueryComponent(encodeFull = true)}"
 }

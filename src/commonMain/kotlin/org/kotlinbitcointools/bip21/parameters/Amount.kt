@@ -13,7 +13,9 @@ private const val MAX_BITCOIN: Long = 21_000_000
 /**
  * Utility class to represent a satoshi amount.
  */
-public data class Amount(public val sat: Long) : Parameter {
+public data class Amount(
+    public val sat: Long,
+) : Parameter {
     init {
         require(sat <= MAX_SATOSHI) { "Satoshi value must be less than or equal to $MAX_SATOSHI" }
         require(sat >= 0) { "Satoshi value must be greater than or equal to 0" }
@@ -43,10 +45,12 @@ public data class Amount(public val sat: Long) : Parameter {
         public fun decode(uriString: String): Amount {
             val bitcoin = uriString.toBigDecimal()
             require(bitcoin >= 0.toBigDecimal()) { "Invalid amount: $uriString (cannot be negative)" }
-            require(bitcoin <= MAX_BITCOIN.toBigDecimal()) { "Invalid amount: $uriString (above possible number of bitcoin)" }
+            require(
+                bitcoin <= MAX_BITCOIN.toBigDecimal(),
+            ) { "Invalid amount: $uriString (above possible number of bitcoin)" }
 
             val satoshis = (bitcoin * 100_000_000.toBigDecimal()).toStringExpanded()
-            require(!satoshis.contains(".")) { "Invalid amount: $uriString (too many decimal places)"}
+            require(!satoshis.contains(".")) { "Invalid amount: $uriString (too many decimal places)" }
 
             return Amount(sat = satoshis.toLong())
         }

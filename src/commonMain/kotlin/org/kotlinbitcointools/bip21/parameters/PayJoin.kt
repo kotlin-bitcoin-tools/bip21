@@ -13,7 +13,9 @@ import io.ktor.http.encodeURLQueryComponent
  *
  * @property value The value of the payjoin parameter.
  */
-public data class PayJoin(val value: String) : Parameter {
+public data class PayJoin(
+    val value: String,
+) : Parameter {
     override fun encode(): String = "&pj=${value.encodeURLQueryComponent(encodeFull = true)}"
 
     public companion object {

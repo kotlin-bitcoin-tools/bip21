@@ -13,7 +13,9 @@ import io.ktor.http.encodeURLQueryComponent
  *
  * @property value The value of the label.
  */
-public data class Label(val value: String) : Parameter {
+public data class Label(
+    val value: String,
+) : Parameter {
     override fun encode(): String = "&label=${value.encodeURLQueryComponent(encodeFull = true)}"
 
     public companion object {

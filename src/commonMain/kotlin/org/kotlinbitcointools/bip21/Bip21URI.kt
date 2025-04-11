@@ -127,7 +127,7 @@ public data class Bip21URI(
                 message = message,
                 lightning = lightning,
                 pj = pj,
-                otherParameters = other
+                otherParameters = other,
             )
         }
 
