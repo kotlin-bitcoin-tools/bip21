@@ -1,8 +1,8 @@
 default:
   just --list
 
-jvmtest:
-  ./gradlew jvmTest
+test:
+  ./gradlew test
 
 onetest TEST:
   ./gradlew test --tests {{TEST}}
