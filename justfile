@@ -11,4 +11,7 @@ serve:
   ./gradlew dokkaGeneratePublicationHtml && rm -rf ./docs/api/ && mv ./build/dokka/html ./docs/api && mkdocs serve
 
 dokka:
-   ./gradlew dokkaGeneratePublicationHtml
+  ./gradlew dokkaGeneratePublicationHtml
+
+publishlocal:
+  ./gradlew publishToMavenLocal --rerun-tasks

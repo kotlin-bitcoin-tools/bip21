@@ -5,6 +5,7 @@ plugins {
     id("org.gradle.maven-publish")
     id("org.jetbrains.dokka") version "2.0.0"
     id("org.jlleitschuh.gradle.ktlint") version "12.1.2"
+    id("org.gradle.signing")
 }
 
 group = "org.kotlinbitcointools"
@@ -19,6 +20,8 @@ java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(17))
     }
+    withSourcesJar()
+    withJavadocJar()
 }
 
 kotlin {
@@ -34,7 +37,13 @@ dependencies {
 }
 
 publishing {
-    publications.withType<MavenPublication>().configureEach {
+    publications {
+        create<MavenPublication>("release") {
+            from(components["java"])
+        }
+    }
+
+    publications.named<MavenPublication>("release") {
         pom {
             name.set("bip21")
             description.set("A library to parse and generate BIP21 URIs.")
@@ -53,8 +62,8 @@ publishing {
                 }
             }
             scm {
-                connection.set("smc:git:https://github.com:kotlin-bitcoin-tools/bip21.git")
-                developerConnection.set("smc:git:git@github.com:kotlin-bitcoin-tools/bip21.git")
+                connection.set("scm:git:https://github.com:kotlin-bitcoin-tools/bip21.git")
+                developerConnection.set("scm:git:git@github.com:kotlin-bitcoin-tools/bip21.git")
                 url.set("https://github.com/kotlin-bitcoin-tools/bip21")
             }
         }
@@ -88,4 +97,11 @@ ktlint {
     reporters {
         reporter(ReporterType.PLAIN).apply { outputToConsole = true }
     }
+}
+
+signing {
+    if (project.hasProperty("noSignature")) {
+        isRequired = false
+    }
+    sign(publishing.publications["release"])
 }
