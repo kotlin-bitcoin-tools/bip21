@@ -5,8 +5,6 @@
 
 package org.kotlinbitcointools.bip21.parameters
 
-import com.ionspin.kotlin.bignum.decimal.toBigDecimal
-
 private const val MAX_SATOSHI: Long = 2_100_000_000_000_000
 private const val MAX_BITCOIN: Long = 21_000_000
 
@@ -29,7 +27,7 @@ public data class Amount(
     /**
      * Convert a satoshi amount to a BIP-21 valid bitcoin amount of type String.
      */
-    public fun toBitcoin(): String = sat.toBigDecimal().divide(100_000_000.toBigDecimal()).toStringExpanded()
+    public fun toBitcoin(): String = sat.toBigDecimal().divide(100_000_000.toBigDecimal()).toPlainString()
 
     /**
      * Encode the amount to a string in the format that is required by the BIP-21 specification.
@@ -49,7 +47,8 @@ public data class Amount(
                 bitcoin <= MAX_BITCOIN.toBigDecimal(),
             ) { "Invalid amount: $uriString (above possible number of bitcoin)" }
 
-            val satoshis = (bitcoin * 100_000_000.toBigDecimal()).toStringExpanded()
+            val satoshis = (bitcoin * 100_000_000.toBigDecimal()).toBigInteger().toString()
+            require(satoshis != "0") { "Invalid amount: $uriString (amount is below 1 satoshi)"}
             require(!satoshis.contains(".")) { "Invalid amount: $uriString (too many decimal places)" }
 
             return Amount(sat = satoshis.toLong())

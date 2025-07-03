@@ -5,8 +5,6 @@
 
 package org.kotlinbitcointools.bip21.parameters
 
-import org.kotlinbitcointools.bip21.parameters.Amount
-import org.kotlinbitcointools.bip21.parameters.fromBitcoinIntoAmount
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith

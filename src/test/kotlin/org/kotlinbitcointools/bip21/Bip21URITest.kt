@@ -274,6 +274,6 @@ class Bip21URITest {
 
         assertEquals("Invalid amount: 21000001 (above possible number of bitcoin)", exception1.message)
         assertEquals("Invalid amount: 21000000.00000001 (above possible number of bitcoin)", exception2.message)
-        assertEquals("Invalid amount: 0.000000001 (too many decimal places)", exception3.message)
+        assertEquals("Invalid amount: 0.000000001 (amount is below 1 satoshi)", exception3.message)
     }
 }
