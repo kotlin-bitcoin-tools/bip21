@@ -18,6 +18,11 @@ test:
 onetest TEST:
   ./gradlew test --tests {{TEST}}
 
+[group("Format")]
+[doc("Run the Ktlint formatter.")]
+format:
+  ./gradlew ktlintFormat
+
 [group("Docs")]
 [doc("Build and run the documentation website locally.")]
 serve:
@@ -32,3 +37,4 @@ dokka:
 [doc("Publish the library to Maven Local.")]
 publishlocal:
   ./gradlew publishToMavenLocal --rerun-tasks
+

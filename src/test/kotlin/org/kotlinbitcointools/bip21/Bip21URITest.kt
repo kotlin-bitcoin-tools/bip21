@@ -62,7 +62,7 @@ class Bip21URITest {
     @Test
     fun `URI with full standard parameters`() {
         val uri = Bip21URI.fromUri(
-             "bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=50&label=Luke-Jr&message=Donation%20for%20project%20xyz",
+            "bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=50&label=Luke-Jr&message=Donation%20for%20project%20xyz",
         )
 
         assertEquals("1andreas3batLhQa2FawWjeyjCqyBzypd", uri.address)

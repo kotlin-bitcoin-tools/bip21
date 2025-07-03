@@ -5,7 +5,6 @@
 
 package org.kotlinbitcointools.bip21
 
-import java.net.URI
 import org.kotlinbitcointools.bip21.parameters.Amount
 import org.kotlinbitcointools.bip21.parameters.Label
 import org.kotlinbitcointools.bip21.parameters.Lightning
@@ -13,6 +12,7 @@ import org.kotlinbitcointools.bip21.parameters.Message
 import org.kotlinbitcointools.bip21.parameters.OtherParameter
 import org.kotlinbitcointools.bip21.parameters.PayJoin
 import org.kotlinbitcointools.bip21.parameters.fromBitcoinIntoAmount
+import java.net.URI
 
 /**
  * Represents a BIP-21 URI.

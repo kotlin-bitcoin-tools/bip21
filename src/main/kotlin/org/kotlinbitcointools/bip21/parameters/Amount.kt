@@ -48,7 +48,7 @@ public data class Amount(
             ) { "Invalid amount: $uriString (above possible number of bitcoin)" }
 
             val satoshis = (bitcoin * 100_000_000.toBigDecimal()).toBigInteger().toString()
-            require(satoshis != "0") { "Invalid amount: $uriString (amount is below 1 satoshi)"}
+            require(satoshis != "0") { "Invalid amount: $uriString (amount is below 1 satoshi)" }
             require(!satoshis.contains(".")) { "Invalid amount: $uriString (too many decimal places)" }
 
             return Amount(sat = satoshis.toLong())
