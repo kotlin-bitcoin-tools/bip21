@@ -30,7 +30,7 @@ kotlin {
 
 dependencies {
     implementation("io.ktor:ktor-client-core-jvm:2.3.13")
-    implementation("com.eygraber:uri-kmp:0.0.14")
+//    implementation("com.eygraber:uri-kmp:0.0.14")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test:2.1.0")
 }

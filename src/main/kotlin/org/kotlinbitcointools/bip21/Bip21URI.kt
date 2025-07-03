@@ -5,7 +5,7 @@
 
 package org.kotlinbitcointools.bip21
 
-import com.eygraber.uri.Uri
+import java.net.URI
 import org.kotlinbitcointools.bip21.parameters.Amount
 import org.kotlinbitcointools.bip21.parameters.Label
 import org.kotlinbitcointools.bip21.parameters.Lightning
@@ -82,7 +82,7 @@ public data class Bip21URI(
          * @sample org.kotlinbitcointools.bip21.decodeBip21URI
          */
         public fun fromUri(input: String): Bip21URI {
-            val uri = Uri.parse(input)
+            val uri = URI(input)
             require(uri.scheme?.lowercase() == "bitcoin") {
                 "Invalid scheme '${input.take(8)}', expected 'bitcoin:'"
             }
@@ -92,20 +92,18 @@ public data class Bip21URI(
             val schemeSpecificPart: String = uri.schemeSpecificPart ?: throw InvalidURIException(
                 "Scheme specific part is null"
             )
-            require(schemeSpecificPart.isNotEmpty()) { "Invalid URI: missing bitcoin address" }
 
             // If the string contains a '?' character, we deconstruct it into the address part (before the '?' and the
-            // other parameters part (after the '?'). If it doesn't contain a '?', we return a Bip21URI with only the
-            // address.
-            val address = schemeSpecificPart.find { it == '?' }?.let {
-                schemeSpecificPart.split("?", limit = 2)
-            }?.first() ?: return Bip21URI(address = schemeSpecificPart)
+            // query part (after the '?'). If it doesn't contain a '?', we return a Bip21URI with only the address.
+            val parts: List<String> = schemeSpecificPart.split("?", limit = 2)
+            val address: String = parts[0]
+            val query: String? = parts.getOrNull(1)
 
-            // NOTE: We cannot use the uri.getQueryParameterNames() API to get the parameters and their values because
-            //       the URI is classified as non-hierarchical, which means the API is not available on it.
-            val query = uri.query ?: throw InvalidURIException("Query part is null")
+            if (query == null) {
+                return Bip21URI(address = schemeSpecificPart)
+            }
+
             require(query.isNotEmpty()) { "'?' character indicates query part but the part is empty" }
-
             val parametersMap: Map<String, String> = buildParametersMap(query)
 
             val amount: Amount? = parametersMap["amount"]?.fromBitcoinIntoAmount()

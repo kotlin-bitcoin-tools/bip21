@@ -11,6 +11,7 @@ import org.kotlinbitcointools.bip21.parameters.Lightning
 import org.kotlinbitcointools.bip21.parameters.Message
 import org.kotlinbitcointools.bip21.parameters.OtherParameter
 import org.kotlinbitcointools.bip21.parameters.fromBitcoinIntoAmount
+import java.net.URISyntaxException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -60,10 +61,9 @@ class Bip21URITest {
 
     @Test
     fun `URI with full standard parameters`() {
-        val uri =
-            Bip21URI.fromUri(
-                "bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=50&label=Luke-Jr&message=Donation%20for%20project%20xyz",
-            )
+        val uri = Bip21URI.fromUri(
+             "bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=50&label=Luke-Jr&message=Donation%20for%20project%20xyz",
+        )
 
         assertEquals("1andreas3batLhQa2FawWjeyjCqyBzypd", uri.address)
         assertNotNull(uri.amount)
@@ -204,11 +204,8 @@ class Bip21URITest {
 
     @Test
     fun `URI has no address`() {
-        val exception =
-            assertFailsWith<IllegalArgumentException> {
-                Bip21URI.fromUri("bitcoin:")
-            }
-        assertEquals("Invalid URI: missing bitcoin address", exception.message)
+        val exception = assertFailsWith<URISyntaxException> { Bip21URI.fromUri("bitcoin:") }
+        assertEquals("Expected scheme-specific part at index 8: bitcoin:", exception.message)
     }
 
     @Test
