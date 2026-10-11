@@ -16,3 +16,10 @@ settings:
     group: org.kotlinbitcointools
     version: 0.1.0-SNAPSHOT
     artifactId: bip21
+  
+  jvm:
+    jdk:
+      version: 25
+      distributions: [temurin]
+      selectionMode: auto
+    release: 17
