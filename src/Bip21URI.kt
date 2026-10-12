@@ -5,6 +5,7 @@
 
 package org.kotlinbitcointools.bip21
 
+import java.net.URI
 import org.kotlinbitcointools.bip21.parameters.Amount
 import org.kotlinbitcointools.bip21.parameters.Label
 import org.kotlinbitcointools.bip21.parameters.Lightning
@@ -12,12 +13,12 @@ import org.kotlinbitcointools.bip21.parameters.Message
 import org.kotlinbitcointools.bip21.parameters.OtherParameter
 import org.kotlinbitcointools.bip21.parameters.PayJoin
 import org.kotlinbitcointools.bip21.parameters.fromBitcoinIntoAmount
-import java.net.URI
 
 /**
  * Represents a BIP-21 URI.
  *
- * See [https://github.com/bitcoin/bips/blob/master/bip-0021.mediawiki](https://github.com/bitcoin/bips/blob/master/bip-0021.mediawiki)
+ * See
+ * [https://github.com/bitcoin/bips/blob/master/bip-0021.mediawiki](https://github.com/bitcoin/bips/blob/master/bip-0021.mediawiki)
  * for specification.
  *
  * Note that while it is common for raw addresses to be displayed in QR format, they are not valid BIP21 URIs on their
@@ -42,9 +43,7 @@ public data class Bip21URI(
     // parameter defined.
     public val pjos: Boolean? = if (pj != null) false else null
 
-    /**
-     * Return a string representation of the URI.
-     */
+    /** Return a string representation of the URI. */
     public fun toURI(): String {
         val schemeAndAddress: String = "bitcoin:$address"
 
@@ -52,17 +51,18 @@ public data class Bip21URI(
             return schemeAndAddress
         }
 
-        val parameters = StringBuilder().let { builder ->
-            builder.append(amount?.let { amount.encode() } ?: "")
-            builder.append(label?.let { label.encode() } ?: "")
-            builder.append(message?.let { message.encode() } ?: "")
-            builder.append(lightning?.let { lightning.encode() } ?: "")
-            builder.append(pj?.let { pj.encode() } ?: "")
-            if (pj != null) builder.append("&pjos=0")
-            otherParameters?.forEach { otherParameter -> builder.append(otherParameter.encode()) }
-            builder.deleteAt(0) // Remove the first '&' character
-            builder.toString()
-        }
+        val parameters =
+            StringBuilder().let { builder ->
+                builder.append(amount?.let { amount.encode() } ?: "")
+                builder.append(label?.let { label.encode() } ?: "")
+                builder.append(message?.let { message.encode() } ?: "")
+                builder.append(lightning?.let { lightning.encode() } ?: "")
+                builder.append(pj?.let { pj.encode() } ?: "")
+                if (pj != null) builder.append("&pjos=0")
+                otherParameters?.forEach { otherParameter -> builder.append(otherParameter.encode()) }
+                builder.deleteAt(0) // Remove the first '&' character
+                builder.toString()
+            }
 
         return "$schemeAndAddress?$parameters"
     }
@@ -89,9 +89,11 @@ public data class Bip21URI(
 
             // This recasts the nullable String? as String and allows us to not have to null-check on further calls
             // below. It's not clear when the schemeSpecificPart could be null (I've only ever seen it empty).
-            val schemeSpecificPart: String = uri.schemeSpecificPart ?: throw InvalidURIException(
-                "Scheme specific part is null"
-            )
+            val schemeSpecificPart: String =
+                uri.schemeSpecificPart
+                    ?: throw InvalidURIException(
+                        "Scheme specific part is null",
+                    )
 
             // If the string contains a '?' character, we deconstruct it into the address part (before the '?' and the
             // query part (after the '?'). If it doesn't contain a '?', we return a Bip21URI with only the address.
@@ -113,10 +115,11 @@ public data class Bip21URI(
             val pj: PayJoin? = parametersMap["pj"]?.let { PayJoin(it) }
             // The pjos parameter is special; this library only supports PayJoin V2, and therefore sets pjos=0 (false)
             // anytime the pj parameter is present. See above for more comments on this parameter.
-            val other: List<OtherParameter>? = parametersMap
-                .filterKeys { it !in setOf("amount", "label", "message", "lightning", "pj", "pjos") }
-                .takeIf { it.isNotEmpty() }
-                ?.map { OtherParameter(it.key, it.value) }
+            val other: List<OtherParameter>? =
+                parametersMap
+                    .filterKeys { it !in setOf("amount", "label", "message", "lightning", "pj", "pjos") }
+                    .takeIf { it.isNotEmpty() }
+                    ?.map { OtherParameter(it.key, it.value) }
 
             return Bip21URI(
                 address = address,

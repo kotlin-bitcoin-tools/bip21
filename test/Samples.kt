@@ -13,7 +13,8 @@ fun buildBip21URIWithAnAddress() {
     val address: String = "1andreas3batLhQa2FawWjeyjCqyBzypd"
     val bip21Uri = Bip21URI(address)
 
-    // Bip21URI(address=1andreas3batLhQa2FawWjeyjCqyBzypd, amount=null, label=null, message=null, lightning=null, pj=null, pjos=null, otherParameters=null)
+    // Bip21URI(address=1andreas3batLhQa2FawWjeyjCqyBzypd, amount=null, label=null, message=null, lightning=null,
+    // pj=null, pjos=null, otherParameters=null)
     println(bip21Uri)
 
     // bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd
@@ -40,5 +41,6 @@ fun decodeBip21URI() {
         )
 
     println(uri)
-    // Bip21URI(address=1andreas3batLhQa2FawWjeyjCqyBzypd, amount=Amount(value=1000), label=Label(value=Luke-Jr), message=Message(value=Donation for project xyz), lightning=null, pj=null, pjos=null, otherParameters=null)
+    // Bip21URI(address=1andreas3batLhQa2FawWjeyjCqyBzypd, amount=Amount(value=1000), label=Label(value=Luke-Jr),
+    // message=Message(value=Donation for project xyz), lightning=null, pj=null, pjos=null, otherParameters=null)
 }

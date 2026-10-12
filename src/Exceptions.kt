@@ -5,9 +5,7 @@
 
 package org.kotlinbitcointools.bip21
 
-/**
- * This exception is thrown when a URI is invalid.
- */
+/** This exception is thrown when a URI is invalid. */
 public class InvalidURIException(
     message: String,
 ) : Exception(message)
