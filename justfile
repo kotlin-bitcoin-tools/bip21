@@ -11,12 +11,7 @@ repo:
 [group("Tests")]
 [doc("Run all unit tests.")]
 test:
-  ./gradlew test
-
-[group("Tests")]
-[doc("Run a single test.")]
-onetest TEST:
-  ./gradlew test --tests {{TEST}}
+  ./kotlin test
 
 [group("Format")]
 [doc("Format all Kotlin source files with ktfmt.")]
@@ -57,4 +52,4 @@ dokka:
 [group("Publish")]
 [doc("Publish the library to Maven Local.")]
 publish-local:
-  ./gradlew publishToMavenLocal --rerun-tasks
+  ./kotlin publish mavenLocal
