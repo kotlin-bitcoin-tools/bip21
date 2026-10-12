@@ -19,9 +19,30 @@ onetest TEST:
   ./gradlew test --tests {{TEST}}
 
 [group("Format")]
-[doc("Run the Ktlint formatter.")]
-format:
-  ./gradlew ktlintFormat
+[doc("Format all Kotlin source files with ktfmt.")]
+format: check-ktfmt-version
+  ktfmt --kotlinlang-style --enable-editorconfig src/ test/
+
+[group("Format")]
+[doc("Check that all Kotlin source files are formatted, without changing them.")]
+format-check: check-ktfmt-version
+  #!/usr/bin/env bash
+  set -euo pipefail
+  if ! ktfmt --kotlinlang-style --enable-editorconfig --dry-run --set-exit-if-changed src/ test/; then
+    echo "Error: the files above need formatting. Run 'just format' to fix them." >&2
+    exit 1
+  fi
+
+# The version of ktfmt must be 0.65
+[private]
+check-ktfmt-version:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  version=$(ktfmt --version | grep -oE '[0-9]+\.[0-9]+')
+  if [ "$version" != "0.65" ]; then
+    echo "Error: ktfmt 0.65 is required, but found $version" >&2
+    exit 1
+  fi
 
 [group("Docs")]
 [doc("Build and run the documentation website locally.")]
@@ -35,6 +56,5 @@ dokka:
 
 [group("Publish")]
 [doc("Publish the library to Maven Local.")]
-publishlocal:
+publish-local:
   ./gradlew publishToMavenLocal --rerun-tasks
-
