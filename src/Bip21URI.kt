@@ -136,6 +136,13 @@ public data class Bip21URI(
             val keys: List<String> = query.split("&").map { it.split("=", limit = 2)[0] }
             if (keys.size != keys.toSet().size) throw InvalidURIException("Invalid URI: duplicate parameter")
 
+            // BIP-21 requires clients to reject the whole URI if it contains a required (req-) parameter they don't
+            // implement. This library doesn't implement any, so any req- parameter makes the URI invalid.
+            val requiredParameter: String? = keys.firstOrNull { it.startsWith("req-", ignoreCase = true) }
+            if (requiredParameter != null) {
+                throw InvalidURIException("Invalid URI: required parameter '$requiredParameter' is not supported")
+            }
+
             return query.split("&").associate { part ->
                 val keyValueElement = part.split("=", limit = 2)
                 require(keyValueElement.size == 2) { "Invalid URI: parameter $part does not have a separator" }

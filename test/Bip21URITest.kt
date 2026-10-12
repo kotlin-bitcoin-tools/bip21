@@ -266,4 +266,35 @@ class Bip21URITest {
 
         assertEquals("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd", uri.toURI())
     }
+
+    // Both URIs in the two tests below are the forward compatibility examples from the BIP-21 specification.
+    @Test
+    fun `URI with unknown optional parameters is accepted`() {
+        val uri =
+            Bip21URI.fromUri(
+                "bitcoin:175tWpb8K1S7NmH4Zx6rewF9WQrcZv245W?somethingyoudontunderstand=50&somethingelseyoudontget=999",
+            )
+
+        assertEquals(
+            listOf(
+                OtherParameter("somethingyoudontunderstand", "50"),
+                OtherParameter("somethingelseyoudontget", "999"),
+            ),
+            uri.otherParameters,
+        )
+    }
+
+    @Test
+    fun `URI with unknown required parameters is rejected`() {
+        val exception =
+            assertFailsWith<InvalidURIException> {
+                Bip21URI.fromUri(
+                    "bitcoin:175tWpb8K1S7NmH4Zx6rewF9WQrcZv245W?req-somethingyoudontunderstand=50&req-somethingelseyoudontget=999",
+                )
+            }
+        assertEquals(
+            "Invalid URI: required parameter 'req-somethingyoudontunderstand' is not supported",
+            exception.message,
+        )
+    }
 }
