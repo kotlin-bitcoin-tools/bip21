@@ -120,4 +120,9 @@ class AmountTest {
         assertEquals(100_000_000L, Amount.decode("1.00000000").sat)
         assertEquals(10_000_000L, Amount.decode("0.10000000").sat)
     }
+
+    @Test
+    fun `Bitcoin amount can be zero`() {
+        listOf("0", "000", "0.0", ".0", "0.").forEach { zero -> assertEquals(Amount(0L), Amount.decode(zero), zero) }
+    }
 }

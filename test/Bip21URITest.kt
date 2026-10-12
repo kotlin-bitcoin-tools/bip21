@@ -297,4 +297,12 @@ class Bip21URITest {
             exception.message,
         )
     }
+
+    @Test
+    fun `URI with an amount of zero survives an encoding and decoding round trip`() {
+        val uri = Bip21URI(address = "1andreas3batLhQa2FawWjeyjCqyBzypd", amount = Amount(0L))
+
+        assertEquals("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=0", uri.toURI())
+        assertEquals(uri, Bip21URI.fromUri(uri.toURI()))
+    }
 }

@@ -70,7 +70,6 @@ public data class Amount(
             val satoshis: Long =
                 wholePart.ifEmpty { "0" }.toLong() * SATOSHIS_PER_BITCOIN + fractionalPart.padEnd(8, '0').toLong()
             require(satoshis <= MAX_SATOSHI) { "Invalid amount: $uriString (above possible number of bitcoin)" }
-            require(satoshis > 0) { "Invalid amount: $uriString (amount is below 1 satoshi)" }
 
             return Amount(sat = satoshis)
         }
