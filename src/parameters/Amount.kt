@@ -8,6 +8,20 @@ package org.kotlinbitcointools.bip21.parameters
 private const val MAX_SATOSHI: Long = 2_100_000_000_000_000
 private const val MAX_BITCOIN: Long = 21_000_000
 
+/**
+ * Check that a string follows the BIP-21 grammar for amounts, `*digit [ "." *digit ]`: digits with an optional '.'
+ * decimal separator. No sign, exponent, or thousands separator is allowed. We also require at least one digit, so ""
+ * and "." are rejected.
+ */
+private fun isBip21AmountFormat(amount: String): Boolean {
+    val parts: List<String> = amount.split(".")
+    val hasAtMostTwoParts = parts.size <= 2
+    val hasAtLeastOneDigit = parts.any { it.isNotEmpty() }
+    val hasOnlyAsciiDigits = parts.all { part -> part.all { it in '0'..'9' } }
+
+    return hasAtMostTwoParts && hasAtLeastOneDigit && hasOnlyAsciiDigits
+}
+
 /** Utility class to represent a satoshi amount. */
 public data class Amount(
     public val sat: Long,
@@ -33,8 +47,11 @@ public data class Amount(
          * use the satoshi unit directly.
          */
         public fun decode(uriString: String): Amount {
+            require(isBip21AmountFormat(uriString)) {
+                "Invalid amount: $uriString (must contain only digits and at most one '.' decimal separator)"
+            }
+
             val bitcoin = uriString.toBigDecimal()
-            require(bitcoin >= 0.toBigDecimal()) { "Invalid amount: $uriString (cannot be negative)" }
             require(
                 bitcoin <= MAX_BITCOIN.toBigDecimal(),
             ) {

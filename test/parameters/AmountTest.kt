@@ -79,4 +79,22 @@ class AmountTest {
         val amount5 = Amount(0L)
         assertEquals("0", amount5.toBitcoin())
     }
+
+    @Test
+    fun `Bitcoin amount must use the BIP-21 number format`() {
+        // Java's BigDecimal accepts all of these, but the BIP-21 grammar only allows digits and a single '.'
+        listOf("1e3", "1E3", "+1", "-1", "1,5", "1.2.3", "abc", "", ".", "١٢").forEach { invalidAmount ->
+            val exception = assertFailsWith<IllegalArgumentException>(invalidAmount) { Amount.decode(invalidAmount) }
+            assertEquals(
+                "Invalid amount: $invalidAmount (must contain only digits and at most one '.' decimal separator)",
+                exception.message,
+            )
+        }
+    }
+
+    @Test
+    fun `Bitcoin amount can omit digits on either side of the decimal separator`() {
+        assertEquals(50_000_000L, Amount.decode(".5").sat)
+        assertEquals(500_000_000L, Amount.decode("5.").sat)
+    }
 }
