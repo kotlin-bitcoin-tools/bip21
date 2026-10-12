@@ -97,4 +97,27 @@ class AmountTest {
         assertEquals(50_000_000L, Amount.decode(".5").sat)
         assertEquals(500_000_000L, Amount.decode("5.").sat)
     }
+
+    @Test
+    fun `Bitcoin amount with more precision than 1 satoshi is rejected instead of truncated`() {
+        listOf("1.000000009", "0.123456789", "20999999.999999999").forEach { tooPrecise ->
+            val exception = assertFailsWith<IllegalArgumentException>(tooPrecise) { Amount.decode(tooPrecise) }
+            assertEquals("Invalid amount: $tooPrecise (too many decimal places)", exception.message)
+        }
+    }
+
+    @Test
+    fun `Bitcoin amount cannot have trailing zeros beyond 8 decimal places`() {
+        // These are valid values (1 bitcoin and 1 satoshi), but the extra zeros make them easy to misread
+        listOf("1.000000000000", "0.000000010").forEach { paddedAmount ->
+            val exception = assertFailsWith<IllegalArgumentException>(paddedAmount) { Amount.decode(paddedAmount) }
+            assertEquals("Invalid amount: $paddedAmount (too many decimal places)", exception.message)
+        }
+    }
+
+    @Test
+    fun `Bitcoin amount can have trailing zeros within 8 decimal places`() {
+        assertEquals(100_000_000L, Amount.decode("1.00000000").sat)
+        assertEquals(10_000_000L, Amount.decode("0.10000000").sat)
+    }
 }

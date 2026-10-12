@@ -108,7 +108,7 @@ class Bip21URITest {
     @Test
     fun `URI has extreme bitcoin amounts`() {
         Bip21URI.fromUri("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=21000000")
-        Bip21URI.fromUri("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=21000000.0000000000000")
+        Bip21URI.fromUri("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=21000000.00000000")
         Bip21URI.fromUri("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=0.00000001")
         Bip21URI.fromUri("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=000000000000.00000001")
     }
@@ -250,7 +250,7 @@ class Bip21URITest {
 
         assertEquals("Invalid amount: 21000001 (above possible number of bitcoin)", exception1.message)
         assertEquals("Invalid amount: 21000000.00000001 (above possible number of bitcoin)", exception2.message)
-        assertEquals("Invalid amount: 0.000000001 (amount is below 1 satoshi)", exception3.message)
+        assertEquals("Invalid amount: 0.000000001 (too many decimal places)", exception3.message)
     }
 
     @Test

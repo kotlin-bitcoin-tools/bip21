@@ -6,7 +6,7 @@
 package org.kotlinbitcointools.bip21.parameters
 
 private const val MAX_SATOSHI: Long = 2_100_000_000_000_000
-private const val MAX_BITCOIN: Long = 21_000_000
+private const val SATOSHIS_PER_BITCOIN: Long = 100_000_000
 
 /**
  * Check that a string follows the BIP-21 grammar for amounts, `*digit [ "." *digit ]`: digits with an optional '.'
@@ -51,18 +51,28 @@ public data class Amount(
                 "Invalid amount: $uriString (must contain only digits and at most one '.' decimal separator)"
             }
 
-            val bitcoin = uriString.toBigDecimal()
-            require(
-                bitcoin <= MAX_BITCOIN.toBigDecimal(),
-            ) {
-                "Invalid amount: $uriString (above possible number of bitcoin)"
-            }
+            // Split an amount like "12.345" into its whole bitcoin part "12" and its fractional part "345". Either part
+            // can be empty (".5" or "5."). Leading zeros of the whole part don't change the value, so we drop them.
+            val wholePart: String = uriString.substringBefore(".").trimStart('0')
+            val fractionalPart: String = uriString.substringAfter(".", missingDelimiterValue = "")
 
-            val satoshis = (bitcoin * 100_000_000.toBigDecimal()).toBigInteger().toString()
-            require(satoshis != "0") { "Invalid amount: $uriString (amount is below 1 satoshi)" }
-            require(!satoshis.contains(".")) { "Invalid amount: $uriString (too many decimal places)" }
+            // The maximum of 21,000,000 bitcoin has 8 digits, so a whole part with more digits is always too large.
+            // Checking this first also guarantees that converting the whole part to a Long below cannot overflow.
+            require(wholePart.length <= 8) { "Invalid amount: $uriString (above possible number of bitcoin)" }
 
-            return Amount(sat = satoshis.toLong())
+            // One satoshi is 0.00000001 bitcoin, so any digit after the 8th decimal place is a fraction of a satoshi.
+            // We also reject trailing zeros beyond the 8th decimal place: they don't change the value, but an amount
+            // like 0.000000010 (1 satoshi) is easy to misread as 10 satoshis, and hints at a payee misunderstanding
+            // the satoshi precision of bitcoin amounts.
+            require(fractionalPart.length <= 8) { "Invalid amount: $uriString (too many decimal places)" }
+
+            // The fractional part is padded with zeros to exactly 8 digits, which is its value in satoshis.
+            val satoshis: Long =
+                wholePart.ifEmpty { "0" }.toLong() * SATOSHIS_PER_BITCOIN + fractionalPart.padEnd(8, '0').toLong()
+            require(satoshis <= MAX_SATOSHI) { "Invalid amount: $uriString (above possible number of bitcoin)" }
+            require(satoshis > 0) { "Invalid amount: $uriString (amount is below 1 satoshi)" }
+
+            return Amount(sat = satoshis)
         }
     }
 }
