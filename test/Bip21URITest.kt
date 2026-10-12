@@ -252,4 +252,18 @@ class Bip21URITest {
         assertEquals("Invalid amount: 21000000.00000001 (above possible number of bitcoin)", exception2.message)
         assertEquals("Invalid amount: 0.000000001 (amount is below 1 satoshi)", exception3.message)
     }
+
+    @Test
+    fun `URI with only a lightning parameter keeps the parameter when encoded`() {
+        val uri = Bip21URI(address = "1andreas3batLhQa2FawWjeyjCqyBzypd", lightning = Lightning("LNBC10U1P3PJ257"))
+
+        assertEquals("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?lightning=LNBC10U1P3PJ257", uri.toURI())
+    }
+
+    @Test
+    fun `URI with an empty list of other parameters is encoded without a query`() {
+        val uri = Bip21URI(address = "1andreas3batLhQa2FawWjeyjCqyBzypd", otherParameters = emptyList())
+
+        assertEquals("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd", uri.toURI())
+    }
 }

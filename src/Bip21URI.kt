@@ -47,10 +47,6 @@ public data class Bip21URI(
     public fun toURI(): String {
         val schemeAndAddress: String = "bitcoin:$address"
 
-        if (amount == null && label == null && message == null && pj == null && otherParameters == null) {
-            return schemeAndAddress
-        }
-
         val parameters =
             StringBuilder().let { builder ->
                 builder.append(amount?.let { amount.encode() } ?: "")
@@ -60,11 +56,11 @@ public data class Bip21URI(
                 builder.append(pj?.let { pj.encode() } ?: "")
                 if (pj != null) builder.append("&pjos=0")
                 otherParameters?.forEach { otherParameter -> builder.append(otherParameter.encode()) }
-                builder.deleteAt(0) // Remove the first '&' character
-                builder.toString()
+                builder.toString().removePrefix("&") // Remove the first '&' character
             }
 
-        return "$schemeAndAddress?$parameters"
+        // If no parameters were added, the URI is just the scheme and address, without a '?'.
+        return if (parameters.isEmpty()) schemeAndAddress else "$schemeAndAddress?$parameters"
     }
 
     override fun toString(): String {
