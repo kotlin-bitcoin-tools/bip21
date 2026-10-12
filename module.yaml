@@ -1,7 +1,5 @@
-product:
-  type: kmp/lib
-  platforms: [jvm]
-  # platforms: [jvm, android, iosArm64, iosSimulatorArm64, iosX64]
+product: jvm/lib
+description: A Kotlin library to parse and generate BIP-21 bitcoin payment URIs.
 
 dependencies:
   - io.ktor:ktor-client-core-jvm:2.3.13
@@ -11,15 +9,34 @@ repositories:
     publish: true
 
 settings:
-  publishing:
-    enabled: true
-    group: org.kotlinbitcointools
-    version: 0.1.0-SNAPSHOT
-    artifactId: bip21
-  
+  kotlin:
+    version: 2.4.20
+    languageVersion: 2.2
+    apiVersion: 2.2
+
   jvm:
     jdk:
       version: 25
       distributions: [temurin]
       selectionMode: auto
     release: 17
+
+  publishing:
+    enabled: true
+    group: org.kotlinbitcointools
+    version: 0.2.0-SNAPSHOT
+    artifactId: bip21
+    mavenCentral:
+      enabled: true
+      publishingMode: manual
+    signArtifacts: true
+    publishSources: true
+    pom:
+      name: bip21
+      url: https://github.com/kotlin-bitcoin-tools/bip21
+      scm: https://github.com/kotlin-bitcoin-tools/bip21
+      developers:
+        - name: thunderbiscuit
+      licenses:
+        - name: Apache-2.0
+          url: https://www.apache.org/licenses/LICENSE-2.0.txt
