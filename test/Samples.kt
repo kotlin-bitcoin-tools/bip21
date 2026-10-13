@@ -31,7 +31,7 @@ fun buildComplexUri() {
         )
 
     println(bip21URI.toURI())
-    // bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=0.00001&label=Luke%2DJr&message=Donation%20for%20project%20xyz
+    // bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=0.00001000&label=Luke%2DJr&message=Donation%20for%20project%20xyz
 }
 
 fun decodeBip21URI() {

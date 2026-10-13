@@ -35,7 +35,15 @@ public data class Amount(
     public constructor(sat: String) : this(sat.toLong())
 
     /** Convert a satoshi amount to a BIP-21 valid bitcoin amount of type String. */
-    public fun toBitcoin(): String = sat.toBigDecimal().divide(100_000_000.toBigDecimal()).toPlainString()
+    public fun toBitcoin(): String {
+        // Split the amount into whole bitcoin and the remaining satoshis, e.g. 1,234,500,000 sat is 12 bitcoin and
+        // 34,500,000 sat. The remaining satoshis written with exactly 8 digits are the decimals ("34500000"). We always
+        // write all 8 decimals, even when they are zeros (7 bitcoin is "7.00000000"), so the amount is never ambiguous.
+        val wholeBitcoin: Long = sat / SATOSHIS_PER_BITCOIN
+        val decimals: String = (sat % SATOSHIS_PER_BITCOIN).toString().padStart(8, '0')
+
+        return "$wholeBitcoin.$decimals"
+    }
 
     /** Encode the amount to a string in the format that is required by the BIP-21 specification. */
     public override fun encode(): String = "&amount=${this.toBitcoin()}"

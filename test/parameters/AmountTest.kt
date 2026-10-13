@@ -65,19 +65,19 @@ class AmountTest {
     @Test
     fun `Amount can be converted to bitcoin amount`() {
         val amount = Amount(100_000_000L)
-        assertEquals("1", amount.toBitcoin())
+        assertEquals("1.00000000", amount.toBitcoin())
 
         val amount2 = Amount(10_000_000_000L)
-        assertEquals("100", amount2.toBitcoin())
+        assertEquals("100.00000000", amount2.toBitcoin())
 
         val amount3 = Amount(1L)
         assertEquals("0.00000001", amount3.toBitcoin())
 
         val amount4 = Amount(10_000_000L)
-        assertEquals("0.1", amount4.toBitcoin())
+        assertEquals("0.10000000", amount4.toBitcoin())
 
         val amount5 = Amount(0L)
-        assertEquals("0", amount5.toBitcoin())
+        assertEquals("0.00000000", amount5.toBitcoin())
     }
 
     @Test
@@ -124,5 +124,19 @@ class AmountTest {
     @Test
     fun `Bitcoin amount can be zero`() {
         listOf("0", "000", "0.0", ".0", "0.").forEach { zero -> assertEquals(Amount(0L), Amount.decode(zero), zero) }
+    }
+
+    @Test
+    fun `Amount with whole and fractional bitcoin can be converted to bitcoin amount`() {
+        assertEquals("12.34500000", Amount(1_234_500_000L).toBitcoin())
+        assertEquals("21000000.00000000", Amount(2_100_000_000_000_000L).toBitcoin())
+        assertEquals("20999999.99999999", Amount(2_099_999_999_999_999L).toBitcoin())
+    }
+
+    @Test
+    fun `Amount converted to bitcoin can be decoded back to the same amount`() {
+        listOf(0L, 1L, 10L, 100_000_000L, 1_234_500_000L, 2_100_000_000_000_000L).forEach { sat ->
+            assertEquals(Amount(sat), Amount.decode(Amount(sat).toBitcoin()), "$sat sat")
+        }
     }
 }

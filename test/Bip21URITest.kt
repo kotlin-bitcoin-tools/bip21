@@ -129,7 +129,7 @@ class Bip21URITest {
             )
         assertEquals(
             expected =
-                "bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=50&label=Kotlin%20Bitcoin%20Tools&message=Building%20tools%20for%20bitcoin%20in%20Kotlin&otherparameter1=abc%20abc&otherparameter2=def%20def",
+                "bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=50.00000000&label=Kotlin%20Bitcoin%20Tools&message=Building%20tools%20for%20bitcoin%20in%20Kotlin&otherparameter1=abc%20abc&otherparameter2=def%20def",
             actual = uri.toURI(),
         )
     }
@@ -185,7 +185,7 @@ class Bip21URITest {
         assertEquals(
             actual = uri.toURI(),
             expected =
-                "bitcoin:BC1QYLH3U67J673H6Y6ALV70M0PL2YZ53TZHVXGG7U?amount=0.00001&label=sbddesign%3A%20For%20lunch%20Tuesday&message=For%20lunch%20Tuesday&lightning=LNO1PG257ENXV4EZQCNEYPE82UM50YNHXGRWDAJX283QFWDPL28QQMC78YMLVHMXCSYWDK5WRJNJ36JRYG488QWLRNZYJCZS",
+                "bitcoin:BC1QYLH3U67J673H6Y6ALV70M0PL2YZ53TZHVXGG7U?amount=0.00001000&label=sbddesign%3A%20For%20lunch%20Tuesday&message=For%20lunch%20Tuesday&lightning=LNO1PG257ENXV4EZQCNEYPE82UM50YNHXGRWDAJX283QFWDPL28QQMC78YMLVHMXCSYWDK5WRJNJ36JRYG488QWLRNZYJCZS",
         )
     }
 
@@ -302,7 +302,7 @@ class Bip21URITest {
     fun `URI with an amount of zero survives an encoding and decoding round trip`() {
         val uri = Bip21URI(address = "1andreas3batLhQa2FawWjeyjCqyBzypd", amount = Amount(0L))
 
-        assertEquals("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=0", uri.toURI())
+        assertEquals("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=0.00000000", uri.toURI())
         assertEquals(uri, Bip21URI.fromUri(uri.toURI()))
     }
 }
