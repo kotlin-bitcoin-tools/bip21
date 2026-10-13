@@ -14,10 +14,4 @@ class MessageTest {
         val message = Message("Donation for project xyz")
         assertEquals("&message=Donation%20for%20project%20xyz", message.encode())
     }
-
-    @Test
-    fun `Build a message parameter from a sanitized string`() {
-        val message = Message.decodeFrom("Donation%20for%20project%20xyz")
-        assertEquals("Donation for project xyz", message.value)
-    }
 }

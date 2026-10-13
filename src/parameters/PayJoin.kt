@@ -5,7 +5,6 @@
 
 package org.kotlinbitcointools.bip21.parameters
 
-import io.ktor.http.decodeURLQueryComponent
 import io.ktor.http.encodeURLQueryComponent
 
 /**
@@ -17,8 +16,4 @@ public data class PayJoin(
     val value: String,
 ) : Parameter {
     override fun encode(): String = "&pj=${value.encodeURLQueryComponent(encodeFull = true)}"
-
-    public companion object {
-        public fun decodeFrom(uriString: String): PayJoin = PayJoin(uriString.decodeURLQueryComponent())
-    }
 }
