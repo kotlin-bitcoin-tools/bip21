@@ -36,6 +36,16 @@ public data class Bip21URI(
     public val pj: PayJoin? = null,
     public val otherParameters: List<OtherParameter>? = null,
 ) {
+    init {
+        // This library doesn't validate addresses for a specific network, but all bitcoin addresses (base58 and
+        // bech32, in lowercase or uppercase) only use ASCII letters and digits. Rejecting anything else prevents
+        // characters like '?', '&', or '#' in the address from changing the meaning of the encoded URI.
+        require(address.isNotEmpty()) { "Invalid address: address cannot be empty" }
+        require(address.all { it in 'a'..'z' || it in 'A'..'Z' || it in '0'..'9' }) {
+            "Invalid address '$address': addresses can only contain ASCII letters and digits"
+        }
+    }
+
     // The pjos parameter is required under BIP-078 (PayJoin V1) but should always be set to 0 (false) as per BIP-077
     // (PayJoin V2). This library supports PayJoin V2 and sets the pjos parameter to false anytime there is a pj
     // parameter defined.

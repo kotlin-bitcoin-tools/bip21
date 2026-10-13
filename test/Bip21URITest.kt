@@ -339,4 +339,31 @@ class Bip21URITest {
 
         assertEquals(uri, Bip21URI.fromUri(uri.toURI()))
     }
+
+    @Test
+    fun `Address cannot contain characters that would change the encoded URI`() {
+        listOf(
+                "1andreas3batLhQa2FawWjeyjCqyBzypd?amount=20000000",
+                "1andreas3batLhQa2FawWjeyjCqyBzypd&amount=20000000",
+                "1andreas3batLhQa2FawWjeyjCqyBzypd#fragment",
+                "1andreas3batLhQa2FawWjeyjCqyBzypd%20",
+                "1andreas3batLhQa2FawWjeyjCqyBzypd ",
+            )
+            .forEach { invalidAddress ->
+                val exception =
+                    assertFailsWith<IllegalArgumentException>(invalidAddress) { Bip21URI(address = invalidAddress) }
+                assertEquals(
+                    "Invalid address '$invalidAddress': addresses can only contain ASCII letters and digits",
+                    exception.message,
+                )
+            }
+    }
+
+    @Test
+    fun `Address cannot be empty`() {
+        val exception = assertFailsWith<IllegalArgumentException> { Bip21URI(address = "") }
+        assertEquals("Invalid address: address cannot be empty", exception.message)
+
+        assertFailsWith<IllegalArgumentException> { Bip21URI.fromUri("bitcoin:?lightning=LNBC10U1P3PJ257") }
+    }
 }
