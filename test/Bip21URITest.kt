@@ -16,6 +16,7 @@ import org.kotlinbitcointools.bip21.parameters.Label
 import org.kotlinbitcointools.bip21.parameters.Lightning
 import org.kotlinbitcointools.bip21.parameters.Message
 import org.kotlinbitcointools.bip21.parameters.OtherParameter
+import org.kotlinbitcointools.bip21.parameters.PayJoin
 import org.kotlinbitcointools.bip21.parameters.fromBitcoinIntoAmount
 
 class Bip21URITest {
@@ -303,6 +304,39 @@ class Bip21URITest {
         val uri = Bip21URI(address = "1andreas3batLhQa2FawWjeyjCqyBzypd", amount = Amount(0L))
 
         assertEquals("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=0.00000000", uri.toURI())
+        assertEquals(uri, Bip21URI.fromUri(uri.toURI()))
+    }
+
+    @Test
+    fun `Percent-encoded separators in values are not treated as separators`() {
+        val uri = Bip21URI.fromUri("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?label=Fish%20%26%20Chips&message=a%3Db")
+
+        assertEquals(Label("Fish & Chips"), uri.label)
+        assertEquals(Message("a=b"), uri.message)
+    }
+
+    @Test
+    fun `Keys and values are percent-decoded exactly once`() {
+        // %25 is the encoding of '%', so %2541 decodes once to the text "%41". Decoding it twice would give "A".
+        val uri = Bip21URI.fromUri("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?label=100%2541&other%20key=50%2525")
+
+        assertEquals(Label("100%41"), uri.label)
+        assertEquals(listOf(OtherParameter("other key", "50%25")), uri.otherParameters)
+    }
+
+    @Test
+    fun `All parameters survive an encoding and decoding round trip`() {
+        val uri =
+            Bip21URI(
+                address = "BC1QYLH3U67J673H6Y6ALV70M0PL2YZ53TZHVXGG7U",
+                amount = Amount(123_456L),
+                label = Label("Fish & Chips = 100% ? #1 + more"),
+                message = Message("Ünïcødé and emoji ₿ 🍟"),
+                lightning = Lightning("LNBC10U1P3PJ257"),
+                pj = PayJoin("https://example.com/pj#RK1Q2WFD"),
+                otherParameters = listOf(OtherParameter("key with & spaces", "value = 50%")),
+            )
+
         assertEquals(uri, Bip21URI.fromUri(uri.toURI()))
     }
 }

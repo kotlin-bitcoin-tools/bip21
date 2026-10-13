@@ -5,6 +5,7 @@
 
 package org.kotlinbitcointools.bip21
 
+import io.ktor.http.decodeURLQueryComponent
 import java.net.URI
 import org.kotlinbitcointools.bip21.parameters.Amount
 import org.kotlinbitcointools.bip21.parameters.Label
@@ -78,10 +79,12 @@ public data class Bip21URI(
                 "Invalid scheme '${input.take(8)}', expected 'bitcoin:'"
             }
 
+            // We use the raw scheme specific part, which is still percent-encoded. The decoded version would turn an
+            // encoded '&' or '=' inside a value into a separator before we get to split the query on them.
             // This recasts the nullable String? as String and allows us to not have to null-check on further calls
             // below. It's not clear when the schemeSpecificPart could be null (I've only ever seen it empty).
             val schemeSpecificPart: String =
-                uri.schemeSpecificPart
+                uri.rawSchemeSpecificPart
                     ?: throw InvalidURIException(
                         "Scheme specific part is null",
                     )
@@ -100,8 +103,9 @@ public data class Bip21URI(
             val parametersMap: Map<String, String> = buildParametersMap(query)
 
             val amount: Amount? = parametersMap["amount"]?.fromBitcoinIntoAmount()
-            val label: Label? = parametersMap["label"]?.let { Label.decodeFrom(it) }
-            val message: Message? = parametersMap["message"]?.let { Message.decodeFrom(it) }
+            // The keys and values in the map are already percent-decoded.
+            val label: Label? = parametersMap["label"]?.let { Label(it) }
+            val message: Message? = parametersMap["message"]?.let { Message(it) }
             val lightning: Lightning? = parametersMap["lightning"]?.let { Lightning(it) }
             val pj: PayJoin? = parametersMap["pj"]?.let { PayJoin(it) }
             // The pjos parameter is special; this library only supports PayJoin V2, and therefore sets pjos=0 (false)
@@ -124,11 +128,15 @@ public data class Bip21URI(
         }
 
         /**
-         * Deconstruct the query part into a map of key-value pairs. This method also checks that there are no duplicate
-         * keys and throw if any are found because the later ones would override the earlier ones.
+         * Deconstruct the raw (still percent-encoded) query part into a map of percent-decoded key-value pairs. This
+         * method also checks that there are no duplicate keys and throw if any are found because the later ones would
+         * override the earlier ones.
+         *
+         * Keys and values are percent-decoded exactly once, after the query has been split on its '&' and '='
+         * separators, so that encoded separators inside keys and values are kept as regular characters.
          */
         private fun buildParametersMap(query: String): Map<String, String> {
-            val keys: List<String> = query.split("&").map { it.split("=", limit = 2)[0] }
+            val keys: List<String> = query.split("&").map { it.split("=", limit = 2)[0].decodeURLQueryComponent() }
             if (keys.size != keys.toSet().size) throw InvalidURIException("Invalid URI: duplicate parameter")
 
             // BIP-21 requires clients to reject the whole URI if it contains a required (req-) parameter they don't
@@ -142,7 +150,8 @@ public data class Bip21URI(
                 val keyValueElement = part.split("=", limit = 2)
                 require(keyValueElement.size == 2) { "Invalid URI: parameter $part does not have a separator" }
 
-                val (key, value) = keyValueElement
+                val key = keyValueElement[0].decodeURLQueryComponent()
+                val value = keyValueElement[1].decodeURLQueryComponent()
                 require(key.isNotEmpty()) { "Invalid URI: parameter $part has an empty key" }
                 require(value.isNotEmpty()) { "Invalid URI: parameter $part has an empty value" }
 
