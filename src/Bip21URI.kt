@@ -106,6 +106,15 @@ public data class Bip21URI(
                 "Invalid scheme '${input.take(8)}', expected 'bitcoin:'"
             }
 
+            // java.net.URI treats everything after a '#' as a fragment and leaves it out of the scheme specific part.
+            // BIP-21 URIs don't have fragments, so a '#' is most likely part of a value that wasn't percent-encoded.
+            // We reject the URI rather than silently dropping the rest of it (e.g. "label=Fish#Chips" would otherwise
+            // be read as the label "Fish"). Note that we check for null rather than for an empty string: a URI ending
+            // with '#' has an empty fragment (""), and we want to reject it too.
+            require(uri.rawFragment == null) {
+                "Invalid URI: the '#' character is not allowed and must be percent-encoded as %23"
+            }
+
             // We use the raw scheme specific part, which is still percent-encoded. The decoded version would turn an
             // encoded '&' or '=' inside a value into a separator before we get to split the query on them.
             // This recasts the nullable String? as String and allows us to not have to null-check on further calls

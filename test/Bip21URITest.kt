@@ -378,4 +378,27 @@ class Bip21URITest {
                 assertTrue(exception.message!!.startsWith("Invalid URI: "), exception.message)
             }
     }
+
+    @Test
+    fun `URI with a fragment is rejected instead of silently truncated`() {
+        listOf(
+                "bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?label=Fish#Chips",
+                "bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd#fragment",
+                "bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=1#",
+            )
+            .forEach { uriWithFragment ->
+                val exception =
+                    assertFailsWith<InvalidURIException>(uriWithFragment) { Bip21URI.fromUri(uriWithFragment) }
+                assertEquals(
+                    "Invalid URI: the '#' character is not allowed and must be percent-encoded as %23",
+                    exception.message,
+                )
+            }
+    }
+
+    @Test
+    fun `Percent-encoded '#' character in a value is accepted`() {
+        val uri = Bip21URI.fromUri("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?label=Fish%23Chips")
+        assertEquals(Label("Fish#Chips"), uri.label)
+    }
 }
