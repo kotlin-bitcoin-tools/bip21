@@ -5,7 +5,6 @@
 
 package org.kotlinbitcointools.bip21
 
-import java.net.URISyntaxException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -23,7 +22,7 @@ class Bip21URITest {
     @Test
     fun `URI cannot be built if scheme is not present`() {
         val uri = "1andreas3batLhQa2FawWjeyjCqyBzypd"
-        assertFailsWith<IllegalArgumentException> {
+        assertFailsWith<InvalidURIException> {
             Bip21URI.fromUri(uri)
         }
     }
@@ -202,7 +201,7 @@ class Bip21URITest {
     @Test
     fun `URI doesn't use bitcoin scheme`() {
         val exception =
-            assertFailsWith<IllegalArgumentException> {
+            assertFailsWith<InvalidURIException> {
                 Bip21URI.fromUri("https://example.com")
             }
         assertEquals("Invalid scheme 'https://', expected 'bitcoin:'", exception.message)
@@ -210,14 +209,14 @@ class Bip21URITest {
 
     @Test
     fun `URI has no address`() {
-        val exception = assertFailsWith<URISyntaxException> { Bip21URI.fromUri("bitcoin:") }
-        assertEquals("Expected scheme-specific part at index 8: bitcoin:", exception.message)
+        val exception = assertFailsWith<InvalidURIException> { Bip21URI.fromUri("bitcoin:") }
+        assertEquals("Invalid URI: Expected scheme-specific part at index 8: bitcoin:", exception.message)
     }
 
     @Test
     fun `URI has question mark character but empty query`() {
         val exception =
-            assertFailsWith<IllegalArgumentException> {
+            assertFailsWith<InvalidURIException> {
                 Bip21URI.fromUri("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?")
             }
         assertEquals("'?' character indicates query part but the part is empty", exception.message)
@@ -226,7 +225,7 @@ class Bip21URITest {
     @Test
     fun `URI has a parameter missing an '=' sign`() {
         val exception =
-            assertFailsWith<IllegalArgumentException> {
+            assertFailsWith<InvalidURIException> {
                 Bip21URI.fromUri(
                     "bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount100&arg1=50&arg2=999&arg3=abc%20abc",
                 )
@@ -237,15 +236,15 @@ class Bip21URITest {
     @Test
     fun `URI has invalid bitcoin amounts`() {
         val exception1 =
-            assertFailsWith<IllegalArgumentException> {
+            assertFailsWith<InvalidURIException> {
                 Bip21URI.fromUri("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=21000001")
             }
         val exception2 =
-            assertFailsWith<IllegalArgumentException> {
+            assertFailsWith<InvalidURIException> {
                 Bip21URI.fromUri("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=21000000.00000001")
             }
         val exception3 =
-            assertFailsWith<IllegalArgumentException> {
+            assertFailsWith<InvalidURIException> {
                 Bip21URI.fromUri("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=0.000000001")
             }
 
@@ -364,6 +363,19 @@ class Bip21URITest {
         val exception = assertFailsWith<IllegalArgumentException> { Bip21URI(address = "") }
         assertEquals("Invalid address: address cannot be empty", exception.message)
 
-        assertFailsWith<IllegalArgumentException> { Bip21URI.fromUri("bitcoin:?lightning=LNBC10U1P3PJ257") }
+        assertFailsWith<InvalidURIException> { Bip21URI.fromUri("bitcoin:?lightning=LNBC10U1P3PJ257") }
+    }
+
+    @Test
+    fun `URI with invalid characters or escapes throws InvalidURIException`() {
+        listOf(
+                "bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?label=Fish and Chips",
+                "bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?label=100%zz",
+                "bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?label=100%",
+            )
+            .forEach { invalidUri ->
+                val exception = assertFailsWith<InvalidURIException>(invalidUri) { Bip21URI.fromUri(invalidUri) }
+                assertTrue(exception.message!!.startsWith("Invalid URI: "), exception.message)
+            }
     }
 }

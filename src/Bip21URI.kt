@@ -7,6 +7,7 @@ package org.kotlinbitcointools.bip21
 
 import io.ktor.http.decodeURLQueryComponent
 import java.net.URI
+import java.net.URISyntaxException
 import org.kotlinbitcointools.bip21.parameters.Amount
 import org.kotlinbitcointools.bip21.parameters.Label
 import org.kotlinbitcointools.bip21.parameters.Lightning
@@ -82,8 +83,24 @@ public data class Bip21URI(
          * Note that because we don't validate addresses in this library, it's possible to have a correctly formed
          * BIP-21 URI that does not have a valid address. Users should validate themselves the address for the network
          * they use.
+         *
+         * @throws InvalidURIException if the input is not a valid BIP-21 URI. The underlying exception, if any, is
+         *   available as its [cause][Throwable.cause].
          */
         public fun fromUri(input: String): Bip21URI {
+            // The checks while parsing come from java.net.URI (URISyntaxException), from require() calls in this class
+            // and in the parameter classes (IllegalArgumentException), and from this class (InvalidURIException). We
+            // wrap the first two so that callers only ever have to catch a single exception type.
+            try {
+                return parse(input)
+            } catch (e: URISyntaxException) {
+                throw InvalidURIException("Invalid URI: ${e.message}", e)
+            } catch (e: IllegalArgumentException) {
+                throw InvalidURIException(e.message ?: "Invalid URI", e)
+            }
+        }
+
+        private fun parse(input: String): Bip21URI {
             val uri = URI(input)
             require(uri.scheme?.lowercase() == "bitcoin") {
                 "Invalid scheme '${input.take(8)}', expected 'bitcoin:'"
