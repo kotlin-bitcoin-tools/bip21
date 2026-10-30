@@ -15,5 +15,9 @@ import io.ktor.http.encodeURLQueryComponent
 public data class Label(
     val value: String,
 ) : Parameter {
+    init {
+        require(value.isNotEmpty()) { "Label value cannot be empty" }
+    }
+
     override fun encode(): String = "&label=${value.encodeURLQueryComponent(encodeFull = true)}"
 }

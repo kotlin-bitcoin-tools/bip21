@@ -7,6 +7,7 @@ package org.kotlinbitcointools.bip21.parameters
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -65,5 +66,11 @@ class PayJoinTest {
             )
 
         assertNull(bip21.pjos)
+    }
+
+    @Test
+    fun `PayJoin value cannot be empty`() {
+        val exception = assertFailsWith<IllegalArgumentException> { PayJoin("") }
+        assertEquals("PayJoin value cannot be empty", exception.message)
     }
 }

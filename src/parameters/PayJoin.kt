@@ -15,5 +15,9 @@ import io.ktor.http.encodeURLQueryComponent
 public data class PayJoin(
     val value: String,
 ) : Parameter {
+    init {
+        require(value.isNotEmpty()) { "PayJoin value cannot be empty" }
+    }
+
     override fun encode(): String = "&pj=${value.encodeURLQueryComponent(encodeFull = true)}"
 }

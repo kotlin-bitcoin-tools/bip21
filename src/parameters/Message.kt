@@ -15,5 +15,9 @@ import io.ktor.http.encodeURLQueryComponent
 public data class Message(
     val value: String,
 ) : Parameter {
+    init {
+        require(value.isNotEmpty()) { "Message value cannot be empty" }
+    }
+
     override fun encode(): String = "&message=${value.encodeURLQueryComponent(encodeFull = true)}"
 }

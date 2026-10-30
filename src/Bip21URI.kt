@@ -9,6 +9,7 @@ import io.ktor.http.decodeURLQueryComponent
 import java.net.URI
 import java.net.URISyntaxException
 import org.kotlinbitcointools.bip21.parameters.Amount
+import org.kotlinbitcointools.bip21.parameters.BIP21_URI_PARAMETER_KEYS
 import org.kotlinbitcointools.bip21.parameters.Label
 import org.kotlinbitcointools.bip21.parameters.Lightning
 import org.kotlinbitcointools.bip21.parameters.Message
@@ -45,6 +46,11 @@ public data class Bip21URI(
         require(address.all { it in 'a'..'z' || it in 'A'..'Z' || it in '0'..'9' }) {
             "Invalid address '$address': addresses can only contain ASCII letters and digits"
         }
+
+        // A key written twice in the URI would make it invalid, since fromUri rejects duplicate parameters.
+        val otherKeys: List<String> = otherParameters?.map { it.key } ?: emptyList()
+        val duplicateKey: String? = otherKeys.firstOrNull { key -> otherKeys.count { it == key } > 1 }
+        require(duplicateKey == null) { "Invalid other parameters: duplicate key '$duplicateKey'" }
     }
 
     // The pjos parameter is required under BIP-078 (PayJoin V1) but should always be set to 0 (false) as per BIP-077
@@ -148,7 +154,7 @@ public data class Bip21URI(
             // anytime the pj parameter is present. See above for more comments on this parameter.
             val other: List<OtherParameter>? =
                 parametersMap
-                    .filterKeys { it !in setOf("amount", "label", "message", "lightning", "pj", "pjos") }
+                    .filterKeys { it !in BIP21_URI_PARAMETER_KEYS }
                     .takeIf { it.isNotEmpty() }
                     ?.map { OtherParameter(it.key, it.value) }
 

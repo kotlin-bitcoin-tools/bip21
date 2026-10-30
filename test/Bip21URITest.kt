@@ -401,4 +401,16 @@ class Bip21URITest {
         val uri = Bip21URI.fromUri("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?label=Fish%23Chips")
         assertEquals(Label("Fish#Chips"), uri.label)
     }
+
+    @Test
+    fun `Other parameters cannot use the same key twice`() {
+        val exception =
+            assertFailsWith<IllegalArgumentException> {
+                Bip21URI(
+                    address = "1andreas3batLhQa2FawWjeyjCqyBzypd",
+                    otherParameters = listOf(OtherParameter("random", "a"), OtherParameter("random", "b")),
+                )
+            }
+        assertEquals("Invalid other parameters: duplicate key 'random'", exception.message)
+    }
 }

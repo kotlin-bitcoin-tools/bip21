@@ -15,5 +15,9 @@ import io.ktor.http.encodeURLQueryComponent
 public data class Lightning(
     val pr: String,
 ) : Parameter {
+    init {
+        require(pr.isNotEmpty()) { "Lightning payment request cannot be empty" }
+    }
+
     override fun encode(): String = "&lightning=${pr.encodeURLQueryComponent(encodeFull = true)}"
 }
