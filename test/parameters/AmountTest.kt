@@ -18,13 +18,13 @@ class AmountTest {
 
     @Test
     fun `Amount can be created from bitcoin amount formatted string`() {
-        val amount0 = "0.001".fromBitcoinIntoAmount()
+        val amount0 = Amount.decode("0.001")
         assertEquals(100_000L, amount0.sat)
 
-        val amount1 = "212121.00000001".fromBitcoinIntoAmount()
+        val amount1 = Amount.decode("212121.00000001")
         assertEquals(21212100000001L, amount1.sat)
 
-        val amount2 = "100".fromBitcoinIntoAmount()
+        val amount2 = Amount.decode("100")
         assertEquals(10_000_000_000L, amount2.sat)
     }
 
@@ -38,7 +38,7 @@ class AmountTest {
     @Test
     fun `Bitcoin amount cannot be negative`() {
         assertFailsWith<IllegalArgumentException> {
-            "-0.001".fromBitcoinIntoAmount()
+            Amount.decode("-0.001")
         }
     }
 
@@ -55,10 +55,10 @@ class AmountTest {
         val tooManyBitcoinAmount = "21000001"
 
         assertFailsWith<IllegalArgumentException> {
-            tooManyDecimalsAmount.fromBitcoinIntoAmount()
+            Amount.decode(tooManyDecimalsAmount)
         }
         assertFailsWith<IllegalArgumentException> {
-            tooManyBitcoinAmount.fromBitcoinIntoAmount()
+            Amount.decode(tooManyBitcoinAmount)
         }
     }
 

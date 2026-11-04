@@ -12,7 +12,6 @@ import org.kotlinbitcointools.bip21.parameters.Lightning
 import org.kotlinbitcointools.bip21.parameters.Message
 import org.kotlinbitcointools.bip21.parameters.OtherParameter
 import org.kotlinbitcointools.bip21.parameters.PayJoin
-import org.kotlinbitcointools.bip21.parameters.fromBitcoinIntoAmount
 
 /**
  * Represents a BIP-21 URI.
@@ -33,7 +32,7 @@ public data class Bip21URI(
     public val message: Message? = null,
     public val lightning: Lightning? = null,
     public val pj: PayJoin? = null,
-    public val otherParameters: List<OtherParameter>? = null,
+    public val otherParameters: List<OtherParameter> = emptyList(),
 ) {
     init {
         // This library doesn't validate addresses for a specific network, but all bitcoin addresses (base58 and
@@ -45,7 +44,7 @@ public data class Bip21URI(
         }
 
         // A key written twice in the URI would make it invalid, since fromUri rejects duplicate parameters.
-        val otherKeys: List<String> = otherParameters?.map { it.key } ?: emptyList()
+        val otherKeys: List<String> = otherParameters.map { it.key }
         val duplicateKey: String? = otherKeys.firstOrNull { key -> otherKeys.count { it == key } > 1 }
         require(duplicateKey == null) { "Invalid other parameters: duplicate key '$duplicateKey'" }
     }
@@ -67,7 +66,7 @@ public data class Bip21URI(
                 builder.append(lightning?.let { lightning.encode() } ?: "")
                 builder.append(pj?.let { pj.encode() } ?: "")
                 if (pj != null) builder.append("&pjos=0")
-                otherParameters?.forEach { otherParameter -> builder.append(otherParameter.encode()) }
+                otherParameters.forEach { otherParameter -> builder.append(otherParameter.encode()) }
                 builder.toString().removePrefix("&") // Remove the first '&' character
             }
 
@@ -146,7 +145,7 @@ public data class Bip21URI(
             require(query.isNotEmpty()) { "'?' character indicates query part but the part is empty" }
             val parametersMap: Map<String, String> = buildParametersMap(query)
 
-            val amount: Amount? = parametersMap["amount"]?.fromBitcoinIntoAmount()
+            val amount: Amount? = parametersMap["amount"]?.let { Amount.decode(it) }
             // The keys and values in the map are already percent-decoded.
             val label: Label? = parametersMap["label"]?.let { Label(it) }
             val message: Message? = parametersMap["message"]?.let { Message(it) }
@@ -154,11 +153,8 @@ public data class Bip21URI(
             val pj: PayJoin? = parametersMap["pj"]?.let { PayJoin(it) }
             // The pjos parameter is special; this library only supports PayJoin V2, and therefore sets pjos=0 (false)
             // anytime the pj parameter is present. See above for more comments on this parameter.
-            val other: List<OtherParameter>? =
-                parametersMap
-                    .filterKeys { it !in BIP21_URI_PARAMETER_KEYS }
-                    .takeIf { it.isNotEmpty() }
-                    ?.map { OtherParameter(it.key, it.value) }
+            val other: List<OtherParameter> =
+                parametersMap.filterKeys { it !in BIP21_URI_PARAMETER_KEYS }.map { OtherParameter(it.key, it.value) }
 
             return Bip21URI(
                 address = address,

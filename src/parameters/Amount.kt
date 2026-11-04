@@ -31,9 +31,6 @@ public data class Amount(
         require(sat >= 0) { "Satoshi value must be greater than or equal to 0" }
     }
 
-    /** Alternate constructor to build a [Amount] from a String. */
-    public constructor(sat: String) : this(sat.toLong())
-
     /** Convert a satoshi amount to a BIP-21 valid bitcoin amount of type String. */
     public fun toBitcoin(): String {
         // Split the amount into whole bitcoin and the remaining satoshis, e.g. 1,234,500,000 sat is 12 bitcoin and
@@ -83,9 +80,3 @@ public data class Amount(
         }
     }
 }
-
-/** Build an [Amount] from a Long. */
-public fun Long.satoshi(): Amount = Amount(this)
-
-/** Build an [Amount] from a bitcoin amount in String format. */
-public fun String.fromBitcoinIntoAmount(): Amount = Amount.decode(this)

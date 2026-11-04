@@ -16,7 +16,6 @@ import org.kotlinbitcointools.bip21.parameters.Lightning
 import org.kotlinbitcointools.bip21.parameters.Message
 import org.kotlinbitcointools.bip21.parameters.OtherParameter
 import org.kotlinbitcointools.bip21.parameters.PayJoin
-import org.kotlinbitcointools.bip21.parameters.fromBitcoinIntoAmount
 
 class Bip21URITest {
     @Test
@@ -38,7 +37,7 @@ class Bip21URITest {
         assertEquals(null, uri.amount)
         assertEquals(null, uri.label)
         assertEquals(null, uri.message)
-        assertEquals(null, uri.otherParameters)
+        assertEquals(emptyList(), uri.otherParameters)
     }
 
     @Test
@@ -70,7 +69,7 @@ class Bip21URITest {
         assertEquals(Amount(5000000000), uri.amount)
         assertEquals(Label("Luke-Jr"), uri.label)
         assertEquals(Message("Donation for project xyz"), uri.message)
-        assertEquals(null, uri.otherParameters)
+        assertEquals(emptyList(), uri.otherParameters)
     }
 
     @Test
@@ -85,7 +84,7 @@ class Bip21URITest {
         assertEquals(Amount(5000000000), uri.amount)
         assertEquals(Label("Luke-Jr"), uri.label)
         assertEquals(Message("Donation? for project xyz"), uri.message)
-        assertEquals(null, uri.otherParameters)
+        assertEquals(emptyList(), uri.otherParameters)
     }
 
     @Test
@@ -100,9 +99,9 @@ class Bip21URITest {
         assertEquals(Amount(10_000_000_000L), uri.amount)
         assertEquals(null, uri.label)
         assertEquals(null, uri.message)
-        assertTrue(uri.otherParameters?.contains(OtherParameter(key = "arg1", value = "50")) == true)
-        assertTrue(uri.otherParameters?.contains(OtherParameter(key = "arg2", value = "999")) == true)
-        assertTrue(uri.otherParameters?.contains(OtherParameter(key = "arg3", value = "abc abc")) == true)
+        assertTrue(uri.otherParameters.contains(OtherParameter(key = "arg1", value = "50")))
+        assertTrue(uri.otherParameters.contains(OtherParameter(key = "arg2", value = "999")))
+        assertTrue(uri.otherParameters.contains(OtherParameter(key = "arg3", value = "abc abc")))
     }
 
     @Test
@@ -173,7 +172,7 @@ class Bip21URITest {
         val uri =
             Bip21URI(
                 address = "BC1QYLH3U67J673H6Y6ALV70M0PL2YZ53TZHVXGG7U",
-                amount = "0.00001".fromBitcoinIntoAmount(),
+                amount = Amount.decode("0.00001"),
                 label = Label("sbddesign: For lunch Tuesday"),
                 message = Message("For lunch Tuesday"),
                 lightning =
