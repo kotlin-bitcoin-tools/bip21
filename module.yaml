@@ -1,9 +1,6 @@
 product: jvm/lib
 description: A Kotlin library to parse and generate BIP-21 bitcoin payment URIs.
 
-dependencies:
-  - io.ktor:ktor-client-core-jvm:2.3.13
-
 repositories:
   - url: mavenLocal
     publish: true

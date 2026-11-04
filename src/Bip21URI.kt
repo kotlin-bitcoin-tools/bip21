@@ -5,7 +5,6 @@
 
 package org.kotlinbitcointools.bip21
 
-import io.ktor.http.decodeURLQueryComponent
 import java.net.URI
 import java.net.URISyntaxException
 import org.kotlinbitcointools.bip21.parameters.Amount
@@ -178,7 +177,7 @@ public data class Bip21URI(
          * separators, so that encoded separators inside keys and values are kept as regular characters.
          */
         private fun buildParametersMap(query: String): Map<String, String> {
-            val keys: List<String> = query.split("&").map { it.split("=", limit = 2)[0].decodeURLQueryComponent() }
+            val keys: List<String> = query.split("&").map { it.split("=", limit = 2)[0].percentDecode() }
             if (keys.size != keys.toSet().size) throw InvalidURIException("Invalid URI: duplicate parameter")
 
             // BIP-21 requires clients to reject the whole URI if it contains a required (req-) parameter they don't
@@ -192,8 +191,8 @@ public data class Bip21URI(
                 val keyValueElement = part.split("=", limit = 2)
                 require(keyValueElement.size == 2) { "Invalid URI: parameter $part does not have a separator" }
 
-                val key = keyValueElement[0].decodeURLQueryComponent()
-                val value = keyValueElement[1].decodeURLQueryComponent()
+                val key = keyValueElement[0].percentDecode()
+                val value = keyValueElement[1].percentDecode()
                 require(key.isNotEmpty()) { "Invalid URI: parameter $part has an empty key" }
                 require(value.isNotEmpty()) { "Invalid URI: parameter $part has an empty value" }
 

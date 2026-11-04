@@ -5,7 +5,7 @@
 
 package org.kotlinbitcointools.bip21.parameters
 
-import io.ktor.http.encodeURLQueryComponent
+import org.kotlinbitcointools.bip21.percentEncode
 
 /** The keys of the parameters that Bip21URI handles itself. Any other key is stored as an [OtherParameter]. */
 internal val BIP21_URI_PARAMETER_KEYS: Set<String> = setOf("amount", "label", "message", "lightning", "pj", "pjos")
@@ -30,6 +30,5 @@ public data class OtherParameter(
         }
     }
 
-    override fun encode(): String =
-        "&${key.encodeURLQueryComponent(encodeFull = true)}=${value.encodeURLQueryComponent(encodeFull = true)}"
+    override fun encode(): String = "&${key.percentEncode()}=${value.percentEncode()}"
 }

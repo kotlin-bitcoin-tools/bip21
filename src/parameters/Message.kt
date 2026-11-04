@@ -5,7 +5,7 @@
 
 package org.kotlinbitcointools.bip21.parameters
 
-import io.ktor.http.encodeURLQueryComponent
+import org.kotlinbitcointools.bip21.percentEncode
 
 /**
  * The message parameter.
@@ -19,5 +19,5 @@ public data class Message(
         require(value.isNotEmpty()) { "Message value cannot be empty" }
     }
 
-    override fun encode(): String = "&message=${value.encodeURLQueryComponent(encodeFull = true)}"
+    override fun encode(): String = "&message=${value.percentEncode()}"
 }

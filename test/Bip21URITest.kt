@@ -413,4 +413,17 @@ class Bip21URITest {
             }
         assertEquals("Invalid other parameters: duplicate key 'random'", exception.message)
     }
+
+    @Test
+    fun `Unreserved characters in values are not percent-encoded`() {
+        val uri = Bip21URI(address = "1andreas3batLhQa2FawWjeyjCqyBzypd", label = Label("Luke-Jr_v1.0~"))
+        assertEquals("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?label=Luke-Jr_v1.0~", uri.toURI())
+    }
+
+    @Test
+    fun `Values that do not decode to valid UTF-8 are rejected`() {
+        val input = "bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?label=%FF"
+        val exception = assertFailsWith<InvalidURIException> { Bip21URI.fromUri(input) }
+        assertEquals("Invalid percent-encoding in '%FF': the decoded bytes are not valid UTF-8", exception.message)
+    }
 }

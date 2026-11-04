@@ -5,7 +5,7 @@
 
 package org.kotlinbitcointools.bip21.parameters
 
-import io.ktor.http.encodeURLQueryComponent
+import org.kotlinbitcointools.bip21.percentEncode
 
 /**
  * The payjoin parameter.
@@ -19,5 +19,5 @@ public data class PayJoin(
         require(value.isNotEmpty()) { "PayJoin value cannot be empty" }
     }
 
-    override fun encode(): String = "&pj=${value.encodeURLQueryComponent(encodeFull = true)}"
+    override fun encode(): String = "&pj=${value.percentEncode()}"
 }
