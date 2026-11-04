@@ -3,14 +3,13 @@
 ⚠️This library is not currently production-ready. Use at your own risk. ⚠️
 <br/>
 
-This library is an implementation of the [BIP-0021] specification. It is written in Kotlin and is intended to be used in Kotlin Multiplatform projects. Please help us review it and make it production-ready! The API is still in flux, and we are open to suggestions. See the [issues] for discussion items and design decisions.
+This library is an implementation of the [BIP-0021] specification. Please help us review it and make it production-ready! The API is still in flux, and we are open to suggestions. See the [issues] for discussion items and design decisions.
 
 The main goals of this library are:
 - [x] 1. BIP-0021 compliant
 - [x] 2. Well tested
 - [ ] 3. Well documented
 - [ ] 4. Production ready
-- [ ] 5. Usable in KMP projects (JVM and iOS platforms)
 
 The library is not currently available on Maven Central. To build locally and deploy to your local Maven repository, see the [build instructions](#build-locally).
 <br/>

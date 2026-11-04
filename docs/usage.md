@@ -9,4 +9,4 @@ The `Bip21URI` type is a data class with typesafe fields for each of the standar
 
 For more examples on how to use the library, take a look at the [test suite].
 
-[test suite]: https://github.com/kotlin-bitcoin-tools/bip21/tree/master/src/commonTest/kotlin/org/kotlinbitcointools/bip21/
+[test suite]: https://github.com/kotlin-bitcoin-tools/bip21/tree/master/test/
