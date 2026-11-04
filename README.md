@@ -11,47 +11,29 @@ The main goals of this library are:
 - [ ] 3. Well documented
 - [ ] 4. Production ready
 
-The library is not currently available on Maven Central. To build locally and deploy to your local Maven repository, see the [build instructions](#build-locally).
-<br/>
-
 ## Install
 
-The library is currently deployed to Maven Central's snapshot repository under the group ID `org.kotlinbitcointools` and the artifact ID `bip21`. You can import it in your project as you would any other Maven dependency provided you have the snapshot Maven repository configured as a dependency source:
-
-```kotlin
-// settings.gradle.kts
-dependencyResolutionManagement {
-    repositories {
-        maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-        // mavenCentral()
-    }
-}
-```
+The library is available on [Maven Central] under the group ID `org.kotlinbitcointools` and the artifact ID `bip21`:
 
 ```kotlin
 // build.gradle.kts
-implementation("org.kotlinbitcointools:bip21:0.0.4-SNAPSHOT")
+implementation("org.kotlinbitcointools:bip21:0.1.0")
 ```
 
-## Documentation
+### Build locally
 
-You can [find the docs for this library here](https://kotlin-bitcoin-tools.github.io/bip21/index.html). You can also serve them locally by using the `just serve` command.
-
-## Build locally
-
-To build the library locally and deploy to your local Maven repository, run the following command:
+To use the latest code from this repository instead, build the library and publish it to your local Maven repository:
 
 ```shell
-./gradlew publishToMavenLocal
+just publish-local
 ```
 
-The library will be available in your local Maven repository (typically at `~/.m2/repository/` for macOS and Linux systems) under the group ID `org.kotlinbitcointools` and the artifact ID `bip21`. You can import it in your project as you would any other Maven dependency provided you have your local Maven repository (`mavenLocal()`) configured as a dependency source:
+This runs `./kotlin publish mavenLocal`, which publishes the library to your local Maven repository (typically at `~/.m2/repository/`). You can then use it in any project that has your local Maven repository (`mavenLocal()`) configured as a dependency source:
 
 ```kotlin
 // settings.gradle.kts
 dependencyResolutionManagement {
     repositories {
-        google()
         mavenCentral()
         mavenLocal()
     }
@@ -60,8 +42,13 @@ dependencyResolutionManagement {
 
 ```kotlin
 // build.gradle.kts
-implementation("org.kotlinbitcointools:bip21:0.0.5-SNAPSHOT")
+implementation("org.kotlinbitcointools:bip21:0.2.0-SNAPSHOT")
 ```
+
+## Documentation
+
+You can [find the docs for this library here](https://kotlin-bitcoin-tools.github.io/bip21/index.html).
 
 [BIP-0021]: https://github.com/bitcoin/bips/blob/master/bip-0021.mediawiki
 [issues]: https://github.com/kotlin-bitcoin-tools/bip21/issues
+[Maven Central]: https://central.sonatype.com/artifact/org.kotlinbitcointools/bip21
