@@ -40,14 +40,9 @@ check-ktfmt-version:
   fi
 
 [group("Docs")]
-[doc("Build and run the documentation website locally.")]
+[doc("Run the documentation website locally.")]
 serve:
-  ./gradlew dokkaGeneratePublicationHtml && rm -rf ./docs/api/ && mv ./build/dokka/html ./docs/api && mkdocs serve
-
-[group("Docs")]
-[doc("Build the API docs.")]
-dokka:
-  ./gradlew dokkaGeneratePublicationHtml
+  mkdocs serve
 
 [group("Publish")]
 [doc("Publish the library to Maven Local.")]

@@ -44,4 +44,3 @@ nav:
   - About: index.md
   - Install: install.md
   - Usage: usage.md
-  - API Docs: ./api/
