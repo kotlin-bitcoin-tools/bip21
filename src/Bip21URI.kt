@@ -5,8 +5,6 @@
 
 package org.kotlinbitcointools.bip21
 
-import java.net.URI
-import java.net.URISyntaxException
 import org.kotlinbitcointools.bip21.parameters.Amount
 import org.kotlinbitcointools.bip21.parameters.BIP21_URI_PARAMETER_KEYS
 import org.kotlinbitcointools.bip21.parameters.Label
@@ -93,42 +91,47 @@ public data class Bip21URI(
          *   available as its [cause][Throwable.cause].
          */
         public fun fromUri(input: String): Bip21URI {
-            // The checks while parsing come from java.net.URI (URISyntaxException), from require() calls in this class
-            // and in the parameter classes (IllegalArgumentException), and from this class (InvalidURIException). We
-            // wrap the first two so that callers only ever have to catch a single exception type.
+            // The checks while parsing come from require() calls in this class and in the parameter classes
+            // (IllegalArgumentException), and from this class (InvalidURIException). We wrap the first so that callers
+            // only ever have to catch a single exception type.
             try {
                 return parse(input)
-            } catch (e: URISyntaxException) {
-                throw InvalidURIException("Invalid URI: ${e.message}", e)
             } catch (e: IllegalArgumentException) {
                 throw InvalidURIException(e.message ?: "Invalid URI", e)
             }
         }
 
         private fun parse(input: String): Bip21URI {
-            val uri = URI(input)
-            require(uri.scheme?.lowercase() == "bitcoin") {
+            // The scheme is everything before the first ':'. It is case-insensitive, so "BITCOIN:" is accepted too.
+            val scheme: String = input.substringBefore(":", missingDelimiterValue = "")
+            require(scheme.equals("bitcoin", ignoreCase = true)) {
                 "Invalid scheme '${input.take(8)}', expected 'bitcoin:'"
             }
 
-            // java.net.URI treats everything after a '#' as a fragment and leaves it out of the scheme specific part.
-            // BIP-21 URIs don't have fragments, so a '#' is most likely part of a value that wasn't percent-encoded.
-            // We reject the URI rather than silently dropping the rest of it (e.g. "label=Fish#Chips" would otherwise
-            // be read as the label "Fish"). Note that we check for null rather than for an empty string: a URI ending
-            // with '#' has an empty fragment (""), and we want to reject it too.
-            require(uri.rawFragment == null) {
+            // The rest of the URI is still percent-encoded. We split it on its '?', '&' and '=' separators first and
+            // only then percent-decode each key and value, so that an encoded '&' or '=' inside a value is not mistaken
+            // for a separator.
+            val schemeSpecificPart: String = input.substringAfter(":")
+
+            // BIP-21 and BIP-321 require URIs to percent-encode every character that RFC 3986 doesn't allow in a query,
+            // like spaces, '"', '<', '>', or '|'. They don't say what a parser should do when a URI doesn't. We
+            // deliberately accept these characters as they are, because they have no meaning in the URI and can only be
+            // read one way: "label=Fish Chips" can only mean the label "Fish Chips". Rejecting them would only make
+            // payments fail for users scanning a QR code from a wallet that encodes values sloppily, and there is
+            // nothing they can do about it. The URIs this library writes are always fully percent-encoded.
+            //
+            // We still reject the characters where accepting them would mean guessing:
+            // - A '#' starts a fragment in a URI. BIP-21 URIs don't have fragments, so a '#' is most likely part of a
+            //   value that wasn't percent-encoded. Either reading could be wrong ("label=Fish#Chips" could be the label
+            //   "Fish" followed by a fragment, or the label "Fish#Chips"), so we reject the URI rather than guess.
+            // - Control characters (like newlines or tabs) are never part of a valid URI. They are more likely to come
+            //   from a corrupted or truncated input than from a value that wasn't encoded.
+            require('#' !in schemeSpecificPart) {
                 "Invalid URI: the '#' character is not allowed and must be percent-encoded as %23"
             }
-
-            // We use the raw scheme specific part, which is still percent-encoded. The decoded version would turn an
-            // encoded '&' or '=' inside a value into a separator before we get to split the query on them.
-            // This recasts the nullable String? as String and allows us to not have to null-check on further calls
-            // below. It's not clear when the schemeSpecificPart could be null (I've only ever seen it empty).
-            val schemeSpecificPart: String =
-                uri.rawSchemeSpecificPart
-                    ?: throw InvalidURIException(
-                        "Scheme specific part is null",
-                    )
+            require(schemeSpecificPart.none { it.isISOControl() }) {
+                "Invalid URI: control characters are not allowed and must be percent-encoded"
+            }
 
             // If the string contains a '?' character, we deconstruct it into the address part (before the '?' and the
             // query part (after the '?'). If it doesn't contain a '?', we return a Bip21URI with only the address.

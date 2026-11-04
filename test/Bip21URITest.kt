@@ -210,7 +210,15 @@ class Bip21URITest {
     @Test
     fun `URI has no address`() {
         val exception = assertFailsWith<InvalidURIException> { Bip21URI.fromUri("bitcoin:") }
-        assertEquals("Invalid URI: Expected scheme-specific part at index 8: bitcoin:", exception.message)
+        assertEquals("Invalid address: address cannot be empty", exception.message)
+    }
+
+    @Test
+    fun `Scheme is case-insensitive`() {
+        listOf("BITCOIN", "Bitcoin", "bItCoIn").forEach { scheme ->
+            val uri = Bip21URI.fromUri("$scheme:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=1")
+            assertEquals(Bip21URI(address = "1andreas3batLhQa2FawWjeyjCqyBzypd", amount = Amount(100_000_000L)), uri)
+        }
     }
 
     @Test
@@ -367,15 +375,42 @@ class Bip21URITest {
     }
 
     @Test
-    fun `URI with invalid characters or escapes throws InvalidURIException`() {
+    fun `URI with invalid percent-encoding throws InvalidURIException`() {
+        listOf("100%zz", "100%").forEach { invalidValue ->
+            val invalidUri = "bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?label=$invalidValue"
+            val exception = assertFailsWith<InvalidURIException>(invalidUri) { Bip21URI.fromUri(invalidUri) }
+            assertEquals(
+                "Invalid percent-encoding in '$invalidValue': '%' must be followed by two hexadecimal digits",
+                exception.message,
+            )
+        }
+    }
+
+    @Test
+    fun `Characters that should have been percent-encoded are accepted as they are`() {
+        val uri =
+            Bip21URI.fromUri(
+                "bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?label=Fish and Chips&message=\"<a|b>\" {x}^`\\&other key=₿ 1",
+            )
+
+        assertEquals(Label("Fish and Chips"), uri.label)
+        assertEquals(Message("\"<a|b>\" {x}^`\\"), uri.message)
+        assertEquals(listOf(OtherParameter("other key", "₿ 1")), uri.otherParameters)
+    }
+
+    @Test
+    fun `URI with control characters is rejected`() {
         listOf(
-                "bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?label=Fish and Chips",
-                "bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?label=100%zz",
-                "bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?label=100%",
+                "bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?label=Fish\nChips",
+                "bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?label=Fish\tChips",
+                "bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd\n",
             )
             .forEach { invalidUri ->
                 val exception = assertFailsWith<InvalidURIException>(invalidUri) { Bip21URI.fromUri(invalidUri) }
-                assertTrue(exception.message!!.startsWith("Invalid URI: "), exception.message)
+                assertEquals(
+                    "Invalid URI: control characters are not allowed and must be percent-encoded",
+                    exception.message,
+                )
             }
     }
 
