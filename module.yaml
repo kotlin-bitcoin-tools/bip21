@@ -10,6 +10,7 @@ settings:
     version: 2.4.20
     languageVersion: 2.2
     apiVersion: 2.2
+    explicitApi: strict
 
   jvm:
     jdk:
