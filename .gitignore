@@ -2,5 +2,7 @@
 build
 .idea
 site/
+.venv/
+.cache/
 .kotlin/
 .DS_Store

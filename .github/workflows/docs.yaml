@@ -1,24 +1,50 @@
 name: Deploy Documentation Website
 
-on: workflow_dispatch
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
+
+# Run one deployment at a time, without cancelling a deployment that has already started
+concurrency:
+  group: pages
+  cancel-in-progress: false
 
 jobs:
   deploy:
-    runs-on: ubuntu-22.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
     steps:
-      - name: "Checkout"
-        uses: actions/checkout@v4
+      - name: "Configure GitHub Pages"
+        uses: actions/configure-pages@v6
 
-      - name: "Install Python"
-        uses: actions/setup-python@v4
+      - name: "Check out code"
+        uses: actions/checkout@v7
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v6
         with:
-          python-version: 3.12
+          python-version-file: docs/.python-version
 
-      - name: "Build and deploy documentation website"
+      - name: "Build documentation website"
+        working-directory: docs
         run: |
-          pip install mkdocs-material
-          mkdocs gh-deploy --force
+          pip install uv
+          uv run --frozen zensical build --clean
+
+      - name: "Upload website"
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: docs/site
+
+      - name: "Deploy to GitHub Pages"
+        uses: actions/deploy-pages@v5
+        id: deployment

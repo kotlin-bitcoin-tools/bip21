@@ -1,0 +1,55 @@
+[project]
+site_url = "https://kotlin-bitcoin-tools.github.io/bip21/"
+site_name = "Kotlin Bitcoin Tools | bip21"
+site_description = "A Kotlin library to parse and generate BIP-21 bitcoin payment URIs."
+
+repo_url = "https://github.com/kotlin-bitcoin-tools/bip21"
+repo_name = "kotlin-bitcoin-tools/bip21"
+
+nav = [
+  { "About" = "index.md" },
+  { "Install" = "install.md" },
+  { "Usage" = "usage.md" },
+]
+
+[project.theme]
+language = "en"
+logo = "images/logo.png"
+features = [
+  "content.code.copy",
+  "navigation.footer",
+  "navigation.instant",
+  "navigation.instant.prefetch",
+  "navigation.top",
+  "navigation.tracking",
+  "search.highlight",
+]
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme)"
+toggle.icon = "lucide/sun-moon"
+toggle.name = "Switch to light mode"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: light)"
+scheme = "default"
+toggle.icon = "lucide/sun"
+toggle.name = "Switch to dark mode"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: dark)"
+scheme = "slate"
+toggle.icon = "lucide/moon"
+toggle.name = "Switch to system preference"
+
+[project.markdown_extensions]
+admonition = {}
+attr_list = {}
+md_in_html = {}
+toc.permalink = true
+pymdownx.highlight.anchor_linenums = true
+pymdownx.highlight.line_spans = "__span"
+pymdownx.highlight.pygments_lang_class = true
+pymdownx.inlinehilite = {}
+pymdownx.superfences = {}
+pymdownx.tasklist.custom_checkbox = true

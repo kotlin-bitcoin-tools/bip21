@@ -49,6 +49,8 @@ implementation("org.kotlinbitcointools:bip21:0.2.0-SNAPSHOT")
 
 You can [find the docs for this library here](https://kotlin-bitcoin-tools.github.io/bip21/index.html).
 
+The website is built with [Zensical](https://zensical.org/). To serve it locally, install [uv](https://docs.astral.sh/uv/) and run `just docs-serve`.
+
 [BIP-0021]: https://github.com/bitcoin/bips/blob/master/bip-0021.mediawiki
 [issues]: https://github.com/kotlin-bitcoin-tools/bip21/issues
 [Maven Central]: https://central.sonatype.com/artifact/org.kotlinbitcointools/bip21

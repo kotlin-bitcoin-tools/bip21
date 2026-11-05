@@ -40,9 +40,19 @@ check-ktfmt-version:
   fi
 
 [group("Docs")]
-[doc("Run the documentation website locally.")]
-serve:
-  mkdocs serve
+[doc("Build the documentation website.")]
+docs-build:
+  cd docs && uv run zensical build --clean
+
+[group("Docs")]
+[doc("Serve the documentation website locally.")]
+docs-serve:
+  cd docs && uv run zensical serve
+
+[group("Docs")]
+[doc("Remove the documentation website build output and Python environment.")]
+docs-clean:
+  rm -rf docs/.venv/ docs/.cache/ docs/site/
 
 [group("Publish")]
 [doc("Publish the library to Maven Local.")]
