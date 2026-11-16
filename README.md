@@ -1,15 +1,11 @@
 # Readme
 
-⚠️This library is not currently production-ready. Use at your own risk. ⚠️
-<br/>
-
-This library is an implementation of the [BIP-0021] specification. Please help us review it and make it production-ready! The API is still in flux, and we are open to suggestions. See the [issues] for discussion items and design decisions.
+This library is an implementation of the [BIP-0021] specification. Until version 1.0, the API may still change between minor releases. Reviews and suggestions are welcome; see the [issues] for discussion items and design decisions.
 
 The main goals of this library are:
 - [x] 1. BIP-0021 compliant
 - [x] 2. Well tested
 - [ ] 3. Well documented
-- [ ] 4. Production ready
 
 ## Install
 
