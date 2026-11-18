@@ -22,7 +22,7 @@ settings:
   publishing:
     enabled: true
     group: org.kotlinbitcointools
-    version: 0.2.0
+    version: 0.3.0-SNAPSHOT
     artifactId: bip21
     # Publishing to Maven Central and signing are disabled by default so that anyone can publish the library to their
     # local Maven repository with `just publish-local`, without a signing key.
