@@ -2,7 +2,9 @@
 
 All notable changes to this library are documented in this file. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [0.2.0] - Unreleased
+## [0.3.0] - Unreleased
+
+## [0.2.0] - 2026-11-18
 
 This release contains breaking changes. Until version 1.0, the API may still change between minor releases.
 
